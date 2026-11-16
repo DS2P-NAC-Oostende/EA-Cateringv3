@@ -27,6 +27,10 @@ Bovenaan staan twee tabbladen: **Instructievideo's** en **Recepten** (1082 recep
 Bij receptstappen met een bekende techniek staat een gouden knop naar de video; in het afspeelscherm staat omgekeerd "Bekijk … recepten met deze techniek".
 De knoppen zijn NL/FR/EN, de recepten zelf voorlopig alleen Nederlands.
 
+**Nieuwe video koppelen aan recepten:** vul in de Sheet (tabblad Video's) kolom G "Zoekwoorden recepten" in, bijv. `flambeer, flamberen`.
+Elk woord telt als heel woord; `ontschub*` telt ook langere woorden mee. De app koppelt de video dan vanzelf aan elke receptstap met dat woord,
+ook in de BeLADL-versie. Uitleg staat ook op het tabblad Uitleg van de Sheet.
+
 Directe links (ook met `&embed=1` voor BeLADL):
 - `?tab=recepten` opent het tabblad Recepten
 - `?recept=<id>` opent meteen één recept (knop "Link kopiëren" bij een recept)

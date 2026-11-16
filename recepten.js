@@ -13,6 +13,10 @@
 //    - in het afspeelscherm staat "Recepten met deze techniek".
 //    De video speelt in hetzelfde zwarte scherm als op de videopagina
 //    (openVideo uit app.js).
+// 3b. Nieuwe video's koppelen zichzelf: vul in de Google Sheet (tabblad Video's)
+//    de kolom "Zoekwoorden recepten" in, bijvoorbeeld "flambeer, flamberen".
+//    Elk recept waarin een receptstap met zo'n woord begint of het bevat,
+//    krijgt dan vanzelf een knop naar die video. Geen nieuwe versie nodig.
 // 4. Directe links: ?tab=recepten, ?recept=<id> en ?techniek=<YouTube-id>.
 //    Met ?embed=1 erbij werkt alles ook ingesloten in BeLADL.
 // 5. De knoppen zijn drietalig (NL/FR/EN, zelfde keuze als de video's);
@@ -48,7 +52,7 @@
             ingredienten: "Ingrediënten", ingredient: "Ingrediënt", hoeveelheid: "Hoeveelheid", bereiding: "Bereidingswijze",
             gezond: "Gezondere variant (volgens bron)", tip: "Tip", aandacht: "Aandachtspunt",
             print: "Recept afdrukken", deel: "Link kopiëren", gekopieerd: "Link gekopieerd",
-            vanVideo: n => `Bekijk ${n} recept${n === 1 ? "" : "en"} met deze techniek`, nlNoot: ""
+            vanVideo: n => `Bekijk ${n} recept${n === 1 ? "" : "en"} met deze techniek`, vanVideoOnbekend: "Bekijk recepten met deze techniek", nlNoot: ""
         },
         fr: {
             tabVideos: "Vidéos d'instruction", tabRecepten: "Recettes", titel: "NAC Performance Support | EA Catering – Recettes",
@@ -69,7 +73,7 @@
             ingredienten: "Ingrédients", ingredient: "Ingrédient", hoeveelheid: "Quantité", bereiding: "Préparation",
             gezond: "Variante plus saine (selon la source)", tip: "Astuce", aandacht: "Point d'attention",
             print: "Imprimer la recette", deel: "Copier le lien", gekopieerd: "Lien copié",
-            vanVideo: n => `Voir ${n} recette${n === 1 ? "" : "s"} avec cette technique`, nlNoot: "Texte de la recette en néerlandais."
+            vanVideo: n => `Voir ${n} recette${n === 1 ? "" : "s"} avec cette technique`, vanVideoOnbekend: "Voir les recettes avec cette technique", nlNoot: "Texte de la recette en néerlandais."
         },
         en: {
             tabVideos: "Instruction videos", tabRecepten: "Recipes", titel: "NAC Performance Support | EA Catering – Recipes",
@@ -90,7 +94,7 @@
             ingredienten: "Ingredients", ingredient: "Ingredient", hoeveelheid: "Quantity", bereiding: "Method",
             gezond: "Healthier option (from source)", tip: "Tip", aandacht: "Note",
             print: "Print recipe", deel: "Copy link", gekopieerd: "Link copied",
-            vanVideo: n => `See ${n} recipe${n === 1 ? "" : "s"} using this technique`, nlNoot: "Recipe text in Dutch."
+            vanVideo: n => `See ${n} recipe${n === 1 ? "" : "s"} using this technique`, vanVideoOnbekend: "See recipes using this technique", nlNoot: "Recipe text in Dutch."
         }
     };
     const taalNu = () => { let t = "nl"; try { t = localStorage.getItem("nac-lang") || "nl"; } catch (e) {} return TEKST[t] ? t : "nl"; };
@@ -333,6 +337,48 @@
         recepten.forEach(r => { r._zoek = plat([r.name, r.category, r.group, r.book, ...r.ingredients.map(i => i[0])].join(" ")); });
         boeken = [...new Set(recepten.map(r => r.book))];
         aan = new Set(boeken);
+        koppelZoekwoorden();
+    }
+
+    // ---------- Koppeling via de kolom "Zoekwoorden recepten" in de Sheet ----------
+    // LEERMODUS: per video maken we van de woorden een zoekpatroon.
+    // - Elk woord telt als heel woord: "fileer" vindt "fileer de vis", niet "gefileerd".
+    // - Zet je er een * achter, dan telt ook alles wat ermee begint: "ontschub*" vindt
+    //   "ontschubben" en "ontschubde".
+    // - Meerdere woorden achter elkaar mag ook: "maak de vis schoon".
+    // Hoofdletters en accenten maken niet uit. Scheid de woorden met komma's.
+    function koppelZoekwoorden() {
+        if (!recepten) return;
+        const metWoorden = (window.videos || []).filter(v => v.woorden);
+        metWoorden.forEach(v => {
+            const woorden = v.woorden.split(/[,;]/).map(w => plat(w.trim())).filter(w => w.replace("*", "").length >= 3);
+            if (!woorden.length) return;
+            const stuk = w => {
+                const begin = w.endsWith("*");
+                const kaal = w.replace(/\*+$/, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+                return kaal + (begin ? "" : "(?![a-z])");
+            };
+            const patroon = new RegExp("(^|[^a-z])(" + woorden.map(stuk).join("|") + ")");
+            recepten.forEach(r => {
+                if ((r.videos || []).some(x => x[0] === v.id)) return;
+                const i = r.steps.findIndex(st => patroon.test(plat(st)));
+                if (i < 0) return;
+                r.videos = (r.videos || []).concat([[v.id, i]]).sort((a, b) => a[1] - b[1]).slice(0, 6);
+            });
+        });
+    }
+    // Aantal recepten bij een video; null = nog niet bekend (recepten nog niet geladen)
+    function aantalVoor(id) {
+        if (!recepten && window.RECEPTEN) bereidVoor();   // BeLADL-bestand: data is er al
+        if (recepten) return recepten.filter(r => (r.videos || []).some(x => x[0] === id)).length;
+        const v = (window.videos || []).find(x => x.id === id);
+        if (v && v.woorden) return null;
+        return AANTAL_PER_VIDEO[id] || 0;
+    }
+    function zetVanVideo(id) {
+        const n = aantalVoor(id);
+        vanVideo.hidden = n === 0 || tab === "recepten";
+        vanVideo.textContent = n === null ? T().vanVideoOnbekend : n ? T().vanVideo(n) : "";
     }
     function laadData() {
         if (recepten) return Promise.resolve();
@@ -414,10 +460,7 @@
         window.openVideo = function (video) {
             origineel(video);
             laatsteVideo = video && video.id;
-            const n = AANTAL_PER_VIDEO[laatsteVideo] || 0;
-            // In het receptenscherm zelf is de link overbodig: je zit al bij het recept.
-            vanVideo.hidden = !n || tab === "recepten";
-            vanVideo.textContent = n ? T().vanVideo(n) : "";
+            zetVanVideo(laatsteVideo);   // in het receptenscherm zelf is de link overbodig
         };
     }
 
@@ -443,7 +486,6 @@
     const vid = p.get("v");
     if (vid && document.getElementById("videoModal").classList.contains("open")) {
         laatsteVideo = vid;
-        const n = AANTAL_PER_VIDEO[vid] || 0;
-        vanVideo.hidden = !n; vanVideo.textContent = n ? T().vanVideo(n) : "";
+        zetVanVideo(vid);
     }
 })();

@@ -25,7 +25,7 @@
     };
     const CACHE_SLEUTEL = "eac-v3-videolijst";
     const TERUGVAL = "videos.js";
-    const SCRIPTS = window.EAC_SCRIPTS || ["app.js?v=6", "favorieten.js?v=1", "recepten.js?v=2"];  // qr.html laadt geen app
+    const SCRIPTS = window.EAC_SCRIPTS || ["app.js?v=6", "favorieten.js?v=1", "recepten.js?v=3"];  // qr.html laadt geen app
 
     // ---------- CSV omzetten naar rijen (houdt rekening met komma's binnen "aanhalingstekens") ----------
     function leesCsv(tekst) {
@@ -62,13 +62,13 @@
 
         const videos = []; const overgeslagen = [];
         vidRijen.slice(1).forEach((r, i) => {
-            const [titel = "", fr = "", en = "", link = "", cat = "", tonen = "Ja"] = r.map(x => (x || "").trim());
+            const [titel = "", fr = "", en = "", link = "", cat = "", tonen = "Ja", woorden = ""] = r.map(x => (x || "").trim());
             if (!titel && !link) return;                                   // lege regel
             if (tonen.toLowerCase() === "nee") return;                     // bewust verborgen
             const id = youtubeId(link);
             const categorie = perNaam[cat.toLowerCase()];
             if (!titel || !id || !categorie) { overgeslagen.push(`rij ${i + 2}`); return; }
-            videos.push({ id, titel, fr: fr || undefined, en: en || undefined, categorie });
+            videos.push({ id, titel, fr: fr || undefined, en: en || undefined, categorie, woorden: woorden || undefined });  // woorden: kolom "Zoekwoorden recepten"
         });
         if (overgeslagen.length) console.warn("Videolijst: overgeslagen (controleer de Sheet):", overgeslagen.join(", "));
         if (!categorieen.length || !videos.length) throw new Error("Videolijst leeg");
