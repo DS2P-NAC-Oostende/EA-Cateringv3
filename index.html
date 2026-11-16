@@ -12,6 +12,7 @@
         if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");
     </script>
     <link rel="stylesheet" href="styles.css?v=7">
+    <link rel="stylesheet" href="recepten.css?v=1">
     <meta name="theme-color" content="#0b1530">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="EA Catering">
@@ -36,12 +37,20 @@
             <button type="button" class="lang-btn" data-lang="en" title="English">EN</button>
         </div>
     </div>
-
+    <!-- Tabbladen: instructievideo's en recepten (recepten.js) -->
+    <div class="weergave" role="tablist" aria-label="Onderdeel">
+        <button type="button" class="weergave-btn" role="tab" id="tabVideos" aria-selected="true" aria-controls="videoMain">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.2v5.6l4.8-2.8z"/></svg><span data-rc="tabVideos">Instructievideo's</span>
+        </button>
+        <button type="button" class="weergave-btn" role="tab" id="tabRecepten" aria-selected="false" aria-controls="receptenView">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6M9 12h4"/></svg><span data-rc="tabRecepten">Recepten</span>
+        </button>
+    </div>
 </header>
 
 <nav class="nav-tabs" id="categorieMenu" aria-label="Categorieën"></nav>
 
-<section class="hero">
+<section class="hero" id="videoHero">
     <div class="hero-body">
         <p class="hero-sub" data-i18n="sub">Navy Academy Oostende | Instructievideo's keukentechnieken</p>
         <h2 id="kop">Alle instructievideo's</h2>
@@ -54,9 +63,12 @@
     </div>
 </section>
 
-<main class="container">
+<main class="container" id="videoMain">
     <div id="videoGrid" class="video-grid"></div>
 </main>
+
+<!-- Tabblad Recepten: wordt gevuld door recepten.js (data in recepten-data.js, pas geladen bij openen) -->
+<div id="receptenView" hidden></div>
 
 <footer>
     <img src="nac-logo.png" alt="" class="footer-logo">
@@ -76,7 +88,7 @@
 </div>
 
 <!-- data.js haalt de videolijst uit de Google Sheet en start daarna app.js en favorieten.js -->
-<script src="data.js?v=4"></script>
+<script src="data.js?v=5"></script>
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js", { scope: "./" });

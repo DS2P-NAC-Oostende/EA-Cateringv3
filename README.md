@@ -21,12 +21,25 @@ De pagina staat niet in het menu van de site; leerlingen zien hem niet. Nieuwe v
 
 Let op: een sticker blijft werken als je titel of categorie wijzigt, maar niet als je de YouTube-link van een video vervangt (print dan een nieuwe).
 
+## Tabblad Recepten
+
+Bovenaan staan twee tabbladen: **Instructievideo's** en **Recepten** (1082 recepten uit DGI 2024, Klein Vers 240e en Selamat Makan 1–3).
+Bij receptstappen met een bekende techniek staat een gouden knop naar de video; in het afspeelscherm staat omgekeerd "Bekijk … recepten met deze techniek".
+De knoppen zijn NL/FR/EN, de recepten zelf voorlopig alleen Nederlands.
+
+Directe links (ook met `&embed=1` voor BeLADL):
+- `?tab=recepten` opent het tabblad Recepten
+- `?recept=<id>` opent meteen één recept (knop "Link kopiëren" bij een recept)
+- `?techniek=<YouTube-id>` toont alle recepten met die techniek
+
 ## Bestanden
 
 - `index.html`, `styles.css`: de pagina en het ontwerp
 - `data.js`: haalt de videolijst uit de Google Sheet en start de app
 - `app.js`: tekent de videokaarten, zoeken, categorieën, taalkeuze en het afspeelscherm
 - `favorieten.js`: favorieten en bekeken-vinkjes
+- `recepten.js`, `recepten.css`: het tabblad Recepten (zoeken, hoofdgroepen, receptweergave, koppeling met de video's)
+- `recepten-data.js`: alle recepten; wordt pas geladen als iemand het tabblad opent (gegenereerd, niet met de hand bewerken)
 - `videos.js`: reservelijst als de Sheet niet bereikbaar is
 - `sw.js`, `manifest.json`: installeren als app op de telefoon
 - `qr.html`, `qrcode.js`: printbare QR-codes per video en categorie (qrcode.js: MIT-licentie, Kazuhiko Arase)
