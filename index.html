@@ -91,7 +91,32 @@
 <script src="data.js?v=5"></script>
 <script>
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" });
+    // LEERMODUS - automatisch bijwerken (ook op iPhone):
+    // Een app op het beginscherm van een iPhone wordt bij openen niet herladen, alleen
+    // "wakker gemaakt". Daarom vragen we bij elk openen zelf of er een nieuwe versie is
+    // (update). Staat er een nieuwe service worker klaar, dan neemt hij het over
+    // (controllerchange) en laden we de pagina één keer opnieuw. Speelt er net een
+    // video, dan wachten we tot het afspeelscherm dicht is.
+    const hadAlBeheer = !!navigator.serviceWorker.controller;
+    let herladen = false;
+    function herlaad() {
+        if (herladen) return;
+        const modal = document.getElementById("videoModal");
+        if (modal && modal.classList.contains("open")) {
+            new MutationObserver((m, o) => { if (!modal.classList.contains("open")) { o.disconnect(); herlaad(); } })
+                .observe(modal, { attributes: true, attributeFilter: ["class"] });
+            return;
+        }
+        herladen = true;
+        location.reload();
+    }
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadAlBeheer) herlaad(); });
+    navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" }).then(reg => {
+        const controleer = () => reg.update().catch(() => {});
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") controleer(); });
+        window.addEventListener("pageshow", e => { if (e.persisted) controleer(); });
+        setInterval(controleer, 30 * 60 * 1000);   // ook als de app lang openstaat
+    });
 }
 </script>
 </body>
