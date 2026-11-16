@@ -193,7 +193,7 @@
             if (e.target.closest("#rcPrint")) return window.print();
             const d = e.target.closest("#rcDeel");
             if (d) {
-                const url = new URL(location.href); url.search = ""; url.searchParams.set("recept", actief);
+                const url = new URL(window.EAC_DEEL_BASIS || location.href); url.search = ""; url.searchParams.set("recept", actief);
                 const klaar = () => { d.textContent = T().gekopieerd; setTimeout(() => { d.textContent = T().deel; }, 1800); };
                 if (navigator.clipboard) navigator.clipboard.writeText(url.href).then(klaar, () => prompt("", url.href));
                 else prompt("", url.href);
@@ -328,9 +328,16 @@
     }
 
     // ---------- Data laden (pas bij eerste gebruik) ----------
+    function bereidVoor() {
+        recepten = window.RECEPTEN;
+        recepten.forEach(r => { r._zoek = plat([r.name, r.category, r.group, r.book, ...r.ingredients.map(i => i[0])].join(" ")); });
+        boeken = [...new Set(recepten.map(r => r.book))];
+        aan = new Set(boeken);
+    }
     function laadData() {
         if (recepten) return Promise.resolve();
         if (laadBezig) return laadBezig;
+        if (window.RECEPTEN) { bereidVoor(); return Promise.resolve(); }   // BeLADL-bestand: data zit er al in
         const melding = document.getElementById("rcMelding");
         melding.hidden = false; melding.innerHTML = `<b>${esc(T().laden)}</b>`;
         laadBezig = new Promise((ok, fout) => {
@@ -338,10 +345,7 @@
             s.src = DATA; s.onload = ok; s.onerror = () => { s.remove(); fout(); };
             document.body.appendChild(s);
         }).then(() => {
-            recepten = window.RECEPTEN;
-            recepten.forEach(r => { r._zoek = plat([r.name, r.category, r.group, r.book, ...r.ingredients.map(i => i[0])].join(" ")); });
-            boeken = [...new Set(recepten.map(r => r.book))];
-            aan = new Set(boeken);
+            bereidVoor();
             melding.hidden = true;
         }).catch(() => {
             laadBezig = null;

@@ -43,3 +43,7 @@ Directe links (ook met `&embed=1` voor BeLADL):
 - `videos.js`: reservelijst als de Sheet niet bereikbaar is
 - `sw.js`, `manifest.json`: installeren als app op de telefoon
 - `qr.html`, `qrcode.js`: printbare QR-codes per video en categorie (qrcode.js: MIT-licentie, Kazuhiko Arase)
+
+## BeLADL-versie (één bestand)
+
+`python3 tools/maak_beladl.py` maakt `EA_Catering_BeLADL.html`: video's én recepten in één bestand om in BeLADL te plakken (geen pagina-in-een-pagina). De videolijst blijft live uit de Sheet komen; na andere wijzigingen het script opnieuw draaien en het bestand opnieuw plakken.
