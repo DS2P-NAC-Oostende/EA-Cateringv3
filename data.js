@@ -25,7 +25,7 @@
     };
     const CACHE_SLEUTEL = "eac-v3-videolijst";
     const TERUGVAL = "videos.js";
-    const SCRIPTS = window.EAC_SCRIPTS || ["app.js?v=6", "favorieten.js?v=1", "recepten.js?v=3"];  // qr.html laadt geen app
+    const SCRIPTS = window.EAC_SCRIPTS || ["app.js?v=6", "favorieten.js?v=1", "recepten.js?v=4"];  // qr.html laadt geen app
 
     // ---------- CSV omzetten naar rijen (houdt rekening met komma's binnen "aanhalingstekens") ----------
     function leesCsv(tekst) {

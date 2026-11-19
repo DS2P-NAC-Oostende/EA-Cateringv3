@@ -199,3 +199,27 @@ details[open].rc-paneel summary::after { transform: rotate(-135deg); }
     .rc-print-kop { display: flex; align-items: center; gap: .6rem; font-size: .8rem; color: #444; margin-bottom: .6rem; }
     .rc-print-kop img { width: 2rem; height: 2rem; }
 }
+
+/* ---------- Hoofdgroep als eigen pagina (na tik op een tegel) ---------- */
+.rc-groepkop { margin-top: 0; }
+.rc-groepkop .rc-terug { margin-bottom: .2rem; }
+.rc-groeptitel { font-family: var(--kop-font); font-weight: 600; font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.15; color: var(--navy-950); margin-bottom: .8rem; }
+.rc-groepkop .rc-chips:empty { display: none; }
+#receptenView.rc-groep-open #rcTegels,
+#receptenView.rc-groep-open #rcBoekPaneel,
+#receptenView.rc-groep-open #rcResKop,
+#receptenView.rc-groep-open #rcHero .hero-sub,
+#receptenView.rc-groep-open #rcHero h2,
+#receptenView.rc-groep-open #rcHero .hero-intro,
+#receptenView.rc-groep-open #rcAantal { display: none; }
+#receptenView.rc-groep-open #rcHero { padding-top: 1rem; padding-bottom: 3.75rem; }
+#receptenView.rc-groep-open .rc-balk { justify-content: flex-end; }
+
+/* ---------- Recept als eigen pagina ---------- */
+#receptenView.rc-recept-open #rcHero,
+#receptenView.rc-recept-open #rcKeuze { display: none; }
+#receptenView.rc-recept-open .container { margin-top: 0; }
+@media (max-width: 760px) {
+    #receptenView.rc-recept-open .rc-recept { margin-top: 1rem; }
+    #receptenView.rc-groep-open #rcHero { padding-top: .8rem; }
+}

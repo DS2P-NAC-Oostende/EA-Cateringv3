@@ -1,6 +1,6 @@
 const PREFIX = "eac-v3-";  // eigen voorvoegsel: alle GitHub-apps delen één opslag
-const CACHE = PREFIX + "19";
-const BESTANDEN = ["./", "./index.html", "./styles.css", "./nac-logo.png", "./favorieten.js", "./data.js", "./app.js?v=6", "./recepten.js?v=3", "./recepten.css?v=1", "./recepten-data.js?v=1", "./styles.css?v=7", "./data.js?v=5", "./favorieten.js?v=1", "./videos.js", "./qr.html", "./qrcode.js"];
+const CACHE = PREFIX + "20";
+const BESTANDEN = ["./", "./index.html", "./styles.css", "./nac-logo.png", "./favorieten.js", "./data.js", "./app.js?v=6", "./recepten.js?v=4", "./recepten.css?v=2", "./recepten-data.js?v=1", "./styles.css?v=7", "./data.js?v=5", "./favorieten.js?v=1", "./videos.js", "./qr.html", "./qrcode.js"];
 
 self.addEventListener("install", (event) => {
     event.waitUntil(caches.open(CACHE).then((c) => c.addAll(BESTANDEN)));

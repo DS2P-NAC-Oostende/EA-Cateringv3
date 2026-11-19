@@ -47,7 +47,7 @@
             zoekres: "Zoekresultaten", meer: "Meer recepten tonen",
             geen: "Geen recepten gevonden", geenUitleg: "Probeer een ander zoekwoord of zet meer bronboeken aan.",
             metTechniek: "Recepten met de techniek", wisFilter: "Filter wissen",
-            terug: "← Terug naar de lijst", receptuur: "Receptuur", volgensBron: "volgens bronrecept", tijd: "Tijd", bron: "Bron", pagina: "pagina",
+            terug: "← Terug naar de lijst", naarGroepen: "← Alle hoofdgroepen", naarStart: "← Naar alle recepten", zoekIn: g => `Zoek in ${g}`, receptuur: "Receptuur", volgensBron: "volgens bronrecept", tijd: "Tijd", bron: "Bron", pagina: "pagina",
             videos: "Instructievideo's bij dit recept", videoUitleg: "De video's tonen de techniek, niet dit specifieke recept.", stap: "stap",
             ingredienten: "Ingrediënten", ingredient: "Ingrediënt", hoeveelheid: "Hoeveelheid", bereiding: "Bereidingswijze",
             gezond: "Gezondere variant (volgens bron)", tip: "Tip", aandacht: "Aandachtspunt",
@@ -68,7 +68,7 @@
             zoekres: "Résultats", meer: "Afficher plus de recettes",
             geen: "Aucune recette trouvée", geenUitleg: "Essayez un autre mot ou activez plus de livres sources.",
             metTechniek: "Recettes avec la technique", wisFilter: "Effacer le filtre",
-            terug: "← Retour à la liste", receptuur: "Portions", volgensBron: "selon la recette source", tijd: "Temps", bron: "Source", pagina: "page",
+            terug: "← Retour à la liste", naarGroepen: "← Tous les groupes", naarStart: "← Toutes les recettes", zoekIn: g => `Rechercher dans ${g}`, receptuur: "Portions", volgensBron: "selon la recette source", tijd: "Temps", bron: "Source", pagina: "page",
             videos: "Vidéos d'instruction pour cette recette", videoUitleg: "Les vidéos montrent la technique, pas cette recette précise.", stap: "étape",
             ingredienten: "Ingrédients", ingredient: "Ingrédient", hoeveelheid: "Quantité", bereiding: "Préparation",
             gezond: "Variante plus saine (selon la source)", tip: "Astuce", aandacht: "Point d'attention",
@@ -89,7 +89,7 @@
             zoekres: "Search results", meer: "Show more recipes",
             geen: "No recipes found", geenUitleg: "Try another word or switch on more source books.",
             metTechniek: "Recipes using", wisFilter: "Clear filter",
-            terug: "← Back to the list", receptuur: "Yield", volgensBron: "as in source recipe", tijd: "Time", bron: "Source", pagina: "page",
+            terug: "← Back to the list", naarGroepen: "← All groups", naarStart: "← All recipes", zoekIn: g => `Search in ${g}`, receptuur: "Yield", volgensBron: "as in source recipe", tijd: "Time", bron: "Source", pagina: "page",
             videos: "Instruction videos for this recipe", videoUitleg: "The videos show the technique, not this specific recipe.", stap: "step",
             ingredienten: "Ingredients", ingredient: "Ingredient", hoeveelheid: "Quantity", bereiding: "Method",
             gezond: "Healthier option (from source)", tip: "Tip", aandacht: "Note",
@@ -160,8 +160,12 @@
             <div id="rcKeuze">
                 <div class="rc-tegels" id="rcTegels"></div>
                 <div class="rc-filter" id="rcFilter" hidden></div>
-                <div class="rc-paneel" id="rcSub" hidden><p class="rc-paneel-kop" id="rcSubTitel"></p><div class="rc-chips" id="rcSubcats"></div></div>
-                <details class="rc-paneel">
+                <div class="rc-paneel rc-groepkop" id="rcSub" hidden>
+                    <button type="button" class="rc-terug" id="rcNaarGroepen"></button>
+                    <h2 class="rc-groeptitel" id="rcSubTitel"></h2>
+                    <div class="rc-chips" id="rcSubcats"></div>
+                </div>
+                <details class="rc-paneel" id="rcBoekPaneel">
                     <summary><span data-rc="boeken" style="margin:0;color:inherit;font-size:1rem;font-weight:600"></span><span id="rcBoekStatus"></span></summary>
                     <div class="rc-boeken" id="rcBoeken"></div>
                     <div class="rc-boek-acties"><button class="rc-klein" id="rcAan" type="button" data-rc="allesAan"></button><button class="rc-klein" id="rcUit" type="button" data-rc="allesUit"></button></div>
@@ -179,21 +183,26 @@
         const $ = id => document.getElementById(id);
         $("rcZoek").addEventListener("input", () => { limiet = PER_KEER; $("rcRecept").hidden = true; actief = null; tekenAlles(); });
         $("rcWis").onclick = () => { $("rcZoek").value = ""; groep = cat = techniek = null; limiet = PER_KEER; $("rcRecept").hidden = true; actief = null; tekenAlles(); zetAdres(); $("rcZoek").focus(); };
+        // Tegel = eigen pagina met de recepten van die hoofdgroep (op de gsm logischer dan
+        // de lijst onderaan). De terugknop van de telefoon brengt je weer bij de tegels.
         $("rcTegels").onclick = e => {
             const b = e.target.closest(".rc-tegel"); if (!b) return;
-            groep = groep === b.dataset.groep ? null : b.dataset.groep; cat = null; limiet = PER_KEER;
+            groep = b.dataset.groep; cat = null; limiet = PER_KEER;
             $("rcRecept").hidden = true; actief = null; tekenAlles();
+            stapIn("groep");
+            naarBoven();
         };
+        $("rcNaarGroepen").onclick = () => terugStap("groep");
         $("rcSubcats").onclick = e => { const b = e.target.closest(".rc-chip"); if (!b) return; cat = b.dataset.cat || null; limiet = PER_KEER; $("rcRecept").hidden = true; tekenAlles(); };
         $("rcFilter").onclick = e => { if (e.target.closest("button")) { techniek = null; limiet = PER_KEER; tekenAlles(); zetAdres(); } };
         $("rcBoeken").onchange = e => { const b = e.target.dataset.boek; if (e.target.checked) aan.add(b); else aan.delete(b); limiet = PER_KEER; tekenAlles(); };
         $("rcAan").onclick = () => { aan = new Set(boeken); tekenAlles(); };
         $("rcUit").onclick = () => { aan.clear(); tekenAlles(); };
         $("rcMeer").onclick = () => { limiet += PER_KEER; tekenResultaten(); };
-        $("rcLijst").onclick = e => { const k = e.target.closest(".rc-kaart"); if (k) toonRecept(k.dataset.id); };
+        $("rcLijst").onclick = e => { const k = e.target.closest(".rc-kaart"); if (k) { scrollLijst = window.scrollY; toonRecept(k.dataset.id); } };
         $("rcRecept").onclick = e => {
             const v = e.target.closest("[data-video]"); if (v) return speel(v.dataset.video);
-            if (e.target.closest("#rcTerug")) return sluitRecept();
+            if (e.target.closest("#rcTerug")) return terugStap("recept");
             if (e.target.closest("#rcPrint")) return window.print();
             const d = e.target.closest("#rcDeel");
             if (d) {
@@ -209,7 +218,7 @@
     function zetTeksten() {
         document.querySelectorAll("[data-rc]").forEach(el => { const t = T()[el.dataset.rc]; if (typeof t === "string") el.textContent = t; });
         const z = document.getElementById("rcZoek");
-        if (z) { z.placeholder = T().zoek; z.setAttribute("aria-label", T().zoek); }
+        if (z) { z.placeholder = groep && groep !== "Alle recepten" ? T().zoekIn(groepNaam(groep)) : T().zoek; z.setAttribute("aria-label", z.placeholder); }
         if (document.body.classList.contains("rc-modus")) document.title = T().titel;
     }
 
@@ -243,13 +252,16 @@
 
     function tekenSub() {
         const paneel = document.getElementById("rcSub");
-        if (!groep || groep === "Alle recepten") { paneel.hidden = true; return; }
+        if (!groep) { paneel.hidden = true; return; }
+        document.getElementById("rcNaarGroepen").textContent = T().naarGroepen;
+        document.getElementById("rcSubTitel").textContent = groepNaam(groep);
+        paneel.hidden = false;
+        if (groep === "Alle recepten") { document.getElementById("rcSubcats").innerHTML = ""; return; }
         const basis = gefilterd(true).filter(r => r.group === groep);
         const tel = {};
         basis.forEach(r => { tel[r.category] = (tel[r.category] || 0) + 1; });
         if (cat && !tel[cat]) tel[cat] = 0;
         const cats = Object.keys(tel).sort((a, b) => a.localeCompare(b, "nl"));
-        document.getElementById("rcSubTitel").textContent = groepNaam(groep);
         document.getElementById("rcSubcats").innerHTML =
             `<button type="button" class="rc-chip${cat === null ? " active" : ""}" data-cat="">${esc(T().alles)}<small>${basis.length}</small></button>` +
             cats.map(c => `<button type="button" class="rc-chip${cat === c ? " active" : ""}" data-cat="${esc(c)}">${esc(c)}<small>${tel[c]}</small></button>`).join("");
@@ -279,12 +291,44 @@
         document.getElementById("rcMeer").hidden = rijen.length <= limiet;
     }
 
-    function tekenAlles() { tekenTegels(); tekenSub(); tekenBoeken(); tekenResultaten(); zetTeksten(); }
+    function tekenAlles() { zetStand(); tekenTegels(); tekenSub(); tekenBoeken(); tekenResultaten(); zetTeksten(); }
+
+    // ---------- Pagina's binnen het tabblad: startscherm, hoofdgroep, recept ----------
+    // LEERMODUS: met history.pushState krijgt elke stap een eigen plek in de
+    // geschiedenis. De terugknop van de telefoon (of browser) gaat dan stap voor
+    // stap terug: recept -> lijst -> tegels, in plaats van de app te verlaten.
+    function zetStand() {
+        view.classList.toggle("rc-groep-open", groep !== null);
+        view.classList.toggle("rc-recept-open", !document.getElementById("rcRecept").hidden);
+    }
+    function naarBoven() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+    function stapIn(soort) {
+        try { history.pushState({ rc: soort }, "", location.href); } catch (e) {}
+    }
+    // Terug met de knop op de pagina: via de geschiedenis als die stap erin staat,
+    // anders (bijv. na een directe link) gewoon zelf terugzetten.
+    function terugStap(soort) {
+        if (history.state && history.state.rc === soort) history.back();
+        else if (soort === "recept") sluitRecept();
+        else sluitGroep();
+    }
+    function sluitGroep() {
+        groep = cat = null; limiet = PER_KEER;
+        document.getElementById("rcRecept").hidden = true; actief = null;
+        tekenAlles(); naarBoven();
+    }
+    window.addEventListener("popstate", e => {
+        if (tab !== "recepten" || !recepten) return;
+        const st = e.state && e.state.rc;
+        if (actief && st !== "recept") sluitRecept();
+        if (groep && !st) sluitGroep();
+    });
 
     // ---------- Eén recept ----------
     const stapNummer = (r, i) => r.steps.slice(0, i + 1).filter(s => !isKop(s)).length || 1;
 
-    function toonRecept(id, zonderScroll) {
+    // opnieuw = alleen opnieuw tekenen (taalwissel), geen nieuwe geschiedenisstap
+    function toonRecept(id, zonderScroll, opnieuw) {
         const r = recepten.find(x => x.id === id); if (!r) return;
         actief = id;
         const perStap = {};
@@ -298,7 +342,7 @@
         const el = document.getElementById("rcRecept");
         el.innerHTML = `
             <div class="rc-print-kop"><img src="${logo ? logo.src : ""}" alt=""><span>Navy Academy Oostende | EA Catering – Recepten</span></div>
-            ${heeftKeuze() ? `<button type="button" class="rc-terug" id="rcTerug">${esc(T().terug)}</button>` : ""}
+            <button type="button" class="rc-terug" id="rcTerug">${esc(heeftKeuze() ? T().terug : T().naarStart)}</button>
             <div class="rc-recept-kop">
                 <p class="rc-recept-cat">${r.group === r.category ? esc(groepNaam(r.group)) : esc(groepNaam(r.group)) + " · " + esc(r.category)}</p>
                 <h2>${esc(r.name)}</h2>
@@ -319,16 +363,20 @@
                     <div class="rc-acties"><button type="button" class="rc-knop" id="rcPrint">${esc(T().print)}</button><button type="button" class="rc-knop rc-licht" id="rcDeel">${esc(T().deel)}</button></div>
                 </section>
             </div>`;
+        const wasDicht = el.hidden;
         el.hidden = false;
         document.getElementById("rcResultaten").hidden = true;
         document.getElementById("rcMelding").hidden = true;
-        if (!zonderScroll) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        zetStand();
+        if (wasDicht && !opnieuw) stapIn("recept");
+        if (!zonderScroll || !opnieuw) window.scrollTo(0, 0);
     }
 
+    let scrollLijst = 0;
     function sluitRecept() {
         document.getElementById("rcRecept").hidden = true; actief = null;
-        tekenResultaten();
-        document.getElementById("rcKeuze").scrollIntoView({ behavior: "smooth", block: "start" });
+        zetStand(); tekenResultaten();
+        window.scrollTo(0, scrollLijst);   // terug naar dezelfde plek in de lijst
     }
 
     // ---------- Data laden (pas bij eerste gebruik) ----------
@@ -413,7 +461,7 @@
                 if (techniek) p.set("techniek", techniek);
             }
             const q = p.toString();
-            history.replaceState(null, "", location.pathname + (q ? "?" + q : ""));
+            history.replaceState(history.state, "", location.pathname + (q ? "?" + q : ""));
         } catch (e) {}
     }
 
@@ -473,7 +521,7 @@
         vertaalTabs();
         if (tab === "recepten") {
             document.title = T().titel;
-            if (recepten) { tekenAlles(); if (actief) toonRecept(actief, true); } else zetTeksten();
+            if (recepten) { tekenAlles(); if (actief) toonRecept(actief, true, true); } else zetTeksten();
         }
     }));
     vertaalTabs();
