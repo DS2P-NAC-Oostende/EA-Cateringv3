@@ -2,7 +2,7 @@
 
 Instructievideo's keukentechnieken voor de Navy Academy Oostende (NAC), in de navy & goud huisstijl.
 
-- Live: https://ron78nl.github.io/EA-Cateringv3/
+- Live: https://ds2p-nac-oostende.github.io/EA-Cateringv3/
 - Oud ontwerp (blijft ongewijzigd bewaard): https://ron78nl.github.io/EA-Cateringv2/
 
 ## Video's toevoegen of wijzigen
@@ -15,7 +15,7 @@ en anders `videos.js` in deze map als reserve.
 
 ## QR-codes voor de werkplek (voor instructeurs)
 
-Open `https://ron78nl.github.io/EA-Cateringv3/qr.html` en kies categorie, formaat (stickers 12 per A4 of poster) en taal, en print.
+Open `https://ds2p-nac-oostende.github.io/EA-Cateringv3/qr.html` en kies categorie, formaat (stickers 12 per A4 of poster) en taal, en print.
 Een scan opent in de app meteen die video (`?v=YouTube-id`) of de hele categorie (`?cat=categorie-id`).
 De pagina staat niet in het menu van de site; leerlingen zien hem niet. Nieuwe video's uit de Sheet staan er vanzelf op.
 
