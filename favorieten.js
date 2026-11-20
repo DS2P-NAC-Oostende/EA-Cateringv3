@@ -15,7 +15,7 @@
 
 (function () {
     // Eigen namen in de opslag, met voorvoegsel zodat andere apps
-    // op ron78nl.github.io er niet aan komen.
+    // op ds2p-nac-oostende.github.io er niet aan komen.
     const SLEUTEL_FAV = "eac-v3-favorieten";
     const SLEUTEL_BEKEKEN = "eac-v3-bekeken";
 
