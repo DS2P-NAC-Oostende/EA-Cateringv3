@@ -42,7 +42,7 @@ data = lees("data.js").replace(
     "            if (inline) { s.textContent = inline.textContent; document.body.appendChild(s); ok(); return; }\n"
     "            s.src = src; s.onload = ok; s.onerror = fout;")
 assert "data-bron" in data, "data.js is veranderd: pas maak_beladl.py aan"
-extra = ('<script>window.EAC_DEEL_BASIS = "https://ron78nl.github.io/EA-Cateringv3/";</script>\n'
+extra = ('<script>window.EAC_DEEL_BASIS = "https://ds2p-nac-oostende.github.io/EA-Cateringv3/";</script>\n'
          f'<script>\n{veilig(lees("recepten-data.js"))}\n</script>\n' + klaar)
 html = re.sub(r'<script src="data\.js[^"]*"></script>', lambda m: extra + f"<script>\n{veilig(data)}\n</script>", html)
 assert "<script src=\"data.js" not in html and "href=\"styles.css" not in html
