@@ -30,6 +30,158 @@
         new URLSearchParams(location.search).has("bestellijst") ||
         !!window.BL_LOSSE_PAGINA;
 
+    // =========================================================
+    // TEKSTEN PER TAAL
+    // ---------------------------------------------------------
+    // Zelfde opzet als recepten.js: de taal staat in localStorage onder
+    // "nac-lang" en wordt gezet door de NL/FR/EN-knoppen in de kopbalk.
+    // De namen van recepten en ingredienten komen uit de kookboeken en
+    // blijven Nederlands; daar hoort de regel "bronTaal" bij.
+    // =========================================================
+    const TEKST = {
+        nl: {
+            uitlegKop: "Zo werkt het.",
+            uitleg: "Kies hieronder de recepten die je gaat maken en vul per recept in hoe vaak je het maakt. De app telt alle ingredi\u00ebnten bij elkaar op tot \u00e9\u00e9n bestellijst.",
+            uitlegPorties: "Staat er bij een recept <b>30 porties</b>, dan is <b>1&times; = 30 porties</b>, 2&times; = 60 porties, enzovoort. Vul dus niet het aantal personen in, maar het aantal keer.",
+            uitlegBron: "Staat er <b>volgens bronrecept</b>, dan vermeldt het kookboek geen aantal porties. 1&times; is dan \u00e9\u00e9n bereiding zoals die in het boek staat.",
+            bronTaal: "",
+            stap1: "Recepten kiezen",
+            stap1Hint: "Zoek op naam of kies eerst een hoofdgroep. Tik op een recept om het toe te voegen. Je kunt ook bij een recept zelf op <b>Op de bestellijst</b> tikken.",
+            zoek: "Zoek een recept, bijvoorbeeld eiersalade of nasi",
+            zoekLabel: "Recept zoeken", hoofdgroep: "Hoofdgroep", alleGroepen: "Alle hoofdgroepen",
+            resultaten: "Zoekresultaten", geenRecept: "Geen recept gevonden.",
+            meerTreffers: (n) => `Nog ${n} andere treffers \u2014 zoek wat preciezer.`,
+            stap2: "Gekozen recepten", nietsGekozen: "Nog niets gekozen.", vulIn: "Vul in hoe vaak je elk recept maakt.",
+            kolRecept: "Recept", kolHoeVaak: "Hoe vaak", kolLevertOp: "Levert op", verwijderen: "Verwijderen",
+            hoeVaakLabel: (naam) => `Hoe vaak maak je ${naam}`, verwijderLabel: (naam) => `${naam} verwijderen`,
+            porties: (n) => `${n} porties`, keerMaal: (a, b) => `${a} \u00d7 ${b}`,
+            bereidingen: (n) => `${n} bereiding${n > 1 ? "en" : ""}`, geenPorties: "aantal porties niet in het boek",
+            basisPorties: (n) => `1\u00d7 = ${n} porties`, basisBron: "1\u00d7 = \u00e9\u00e9n bereiding volgens het bronrecept",
+            stap3: "Bestellijst", afdrukken: "Afdrukken (A4)", excel: "Excel-bestand (CSV)",
+            sortering: (x) => "Sortering: " + x, perGroep: "per productgroep", alfabetisch: "alfabetisch",
+            wissen: "Lijst wissen", wisVraag: "De hele lijst wissen?",
+            optieSamen: "Verschillende namen voor hetzelfde product samentellen (Djah\u00e9 = gemberpoeder)",
+            optieHerkomst: "Bij elk artikel tonen uit welk recept het komt",
+            eigenNaam: "Zelf een artikel erbij, bijvoorbeeld aluminiumfolie", eigenAantal: "Hoeveel",
+            eigenToe: "Toevoegen", eigenLabel: "Naam van het artikel", aantalLabel: "Hoeveelheid", eenheidLabel: "Eenheid",
+            kiesEerst: "Kies eerst een of meer recepten.", nietGeladen: "De receptenlijst kon niet geladen worden.",
+            telling: (n) => `${n} af te wegen artikel${n === 1 ? "" : "en"}`, tellingVrij: (n) => ` \u00b7 ${n} naar smaak`,
+            naarSmaak: "naar smaak", ookGeteld: "ook geteld als:", uitRecept: "uit:", zelfToegevoegd: "zelf toegevoegd",
+            alleArtikelen: "Alle artikelen", groepVrij: "Naar smaak / geen hoeveelheid vermeld",
+            stuks: "stuks", stuk: "stuk", geenEenheid: "geen",
+            vanLijst: "Van de lijst halen (heb ik al)", vanLijstLabel: (naam) => `${naam} van de lijst halen`,
+            geschrapt: (n) => `${n} artikel${n === 1 ? "" : "en"} door jou van de lijst gehaald.`, weerTonen: "Weer tonen",
+            letOpKop: "Even zelf nakijken.",
+            letOp: "Deze regels zijn bewust niet samengeteld. Namen die op elkaar lijken kunnen andere producten zijn (vers tegenover poeder), en hetzelfde product in twee eenheden telt de app nooit bij elkaar op:",
+            letOpSlot: "Hoort het toch bij elkaar? Zet de namen dan samen in producten.js, bij SYNONIEMEN.",
+            letOpMeer: (n) => `\u2026 en nog ${n} andere.`,
+            tweeEenheden: (naam, a, b) => `${naam}: staat er twee keer op, in ${a} en in ${b}`,
+            meerProducten: (naam) => `${naam}: lijkt meerdere producten op \u00e9\u00e9n regel, met \u00e9\u00e9n hoeveelheid`,
+            printKop: "Bestellijst keuken", opgemaakt: (d) => `Opgemaakt op ${d} \u00b7 `,
+            csvKolommen: ["Productgroep", "Ingredient", "Hoeveelheid", "Eenheid", "Ook geteld als", "Uit recept(en)"],
+            csvRecepten: ["Gekozen recepten", "Hoe vaak", "Levert op"], volgensBron: "volgens bronrecept", blz: "blz.",
+            bestandsnaam: "bestellijst", datumTaal: "nl-BE",
+            receptgroepen: { "Voorgerechten": "Voorgerechten", "Hoofdgerechten": "Hoofdgerechten", "Sauzen": "Sauzen", "Desserts": "Desserts", "Ontbijt & Snacks": "Ontbijt & Snacks", "Blauwe Hap": "Blauwe Hap" }
+        },
+        fr: {
+            uitlegKop: "Comment \u00e7a marche.",
+            uitleg: "Choisissez ci-dessous les recettes que vous allez pr\u00e9parer et indiquez combien de fois pour chacune. L'application additionne tous les ingr\u00e9dients en une seule liste de commande.",
+            uitlegPorties: "Si une recette indique <b>30 portions</b>, alors <b>1&times; = 30 portions</b>, 2&times; = 60 portions, et ainsi de suite. N'indiquez donc pas le nombre de personnes, mais le nombre de fois.",
+            uitlegBron: "Si elle indique <b>selon la recette d'origine</b>, le livre ne mentionne pas de nombre de portions. 1&times; correspond alors \u00e0 une pr\u00e9paration telle qu'elle figure dans le livre.",
+            bronTaal: "Les noms des recettes et des ingr\u00e9dients sont en n\u00e9erlandais.",
+            stap1: "Choisir les recettes",
+            stap1Hint: "Cherchez par nom ou choisissez d'abord un groupe principal. Touchez une recette pour l'ajouter. Vous pouvez aussi toucher <b>Sur la liste de commande</b> dans la recette m\u00eame.",
+            zoek: "Chercher une recette, par exemple eiersalade ou nasi",
+            zoekLabel: "Chercher une recette", hoofdgroep: "Groupe principal", alleGroepen: "Tous les groupes",
+            resultaten: "R\u00e9sultats", geenRecept: "Aucune recette trouv\u00e9e.",
+            meerTreffers: (n) => `Encore ${n} autres r\u00e9sultats \u2014 affinez votre recherche.`,
+            stap2: "Recettes choisies", nietsGekozen: "Rien de choisi pour l'instant.", vulIn: "Indiquez combien de fois vous pr\u00e9parez chaque recette.",
+            kolRecept: "Recette", kolHoeVaak: "Combien de fois", kolLevertOp: "Donne", verwijderen: "Supprimer",
+            hoeVaakLabel: (naam) => `Combien de fois pr\u00e9parez-vous ${naam}`, verwijderLabel: (naam) => `Supprimer ${naam}`,
+            porties: (n) => `${n} portions`, keerMaal: (a, b) => `${a} \u00d7 ${b}`,
+            bereidingen: (n) => `${n} pr\u00e9paration${n > 1 ? "s" : ""}`, geenPorties: "nombre de portions absent du livre",
+            basisPorties: (n) => `1\u00d7 = ${n} portions`, basisBron: "1\u00d7 = une pr\u00e9paration selon la recette d'origine",
+            stap3: "Liste de commande", afdrukken: "Imprimer (A4)", excel: "Fichier Excel (CSV)",
+            sortering: (x) => "Tri : " + x, perGroep: "par groupe de produits", alfabetisch: "alphab\u00e9tique",
+            wissen: "Effacer la liste", wisVraag: "Effacer toute la liste ?",
+            optieSamen: "Additionner les noms diff\u00e9rents d'un m\u00eame produit (Djah\u00e9 = gingembre en poudre)",
+            optieHerkomst: "Indiquer pour chaque article de quelle recette il provient",
+            eigenNaam: "Ajouter un article vous-m\u00eame, par exemple du papier aluminium", eigenAantal: "Combien",
+            eigenToe: "Ajouter", eigenLabel: "Nom de l'article", aantalLabel: "Quantit\u00e9", eenheidLabel: "Unit\u00e9",
+            kiesEerst: "Choisissez d'abord une ou plusieurs recettes.", nietGeladen: "La liste des recettes n'a pas pu \u00eatre charg\u00e9e.",
+            telling: (n) => `${n} article${n === 1 ? "" : "s"} \u00e0 peser`, tellingVrij: (n) => ` \u00b7 ${n} selon le go\u00fbt`,
+            naarSmaak: "selon le go\u00fbt", ookGeteld: "compt\u00e9 aussi comme :", uitRecept: "de :", zelfToegevoegd: "ajout\u00e9 par vous",
+            alleArtikelen: "Tous les articles", groepVrij: "Selon le go\u00fbt / quantit\u00e9 non indiqu\u00e9e",
+            stuks: "pi\u00e8ces", stuk: "pi\u00e8ce", geenEenheid: "aucune",
+            vanLijst: "Retirer de la liste (d\u00e9j\u00e0 en stock)", vanLijstLabel: (naam) => `Retirer ${naam} de la liste`,
+            geschrapt: (n) => `${n} article${n === 1 ? "" : "s"} retir\u00e9${n === 1 ? "" : "s"} par vous.`, weerTonen: "Afficher \u00e0 nouveau",
+            letOpKop: "\u00c0 v\u00e9rifier vous-m\u00eame.",
+            letOp: "Ces lignes n'ont volontairement pas \u00e9t\u00e9 additionn\u00e9es. Des noms qui se ressemblent peuvent \u00eatre d'autres produits (frais contre en poudre), et un m\u00eame produit indiqu\u00e9 en deux unit\u00e9s n'est jamais additionn\u00e9 :",
+            letOpSlot: "Cela va quand m\u00eame ensemble ? Regroupez alors les noms dans producten.js, sous SYNONIEMEN.",
+            letOpMeer: (n) => `\u2026 et ${n} autres.`,
+            tweeEenheden: (naam, a, b) => `${naam} : figure deux fois, en ${a} et en ${b}`,
+            meerProducten: (naam) => `${naam} : semble contenir plusieurs produits sur une ligne, avec une seule quantit\u00e9`,
+            printKop: "Liste de commande cuisine", opgemaakt: (d) => `\u00c9tablie le ${d} \u00b7 `,
+            csvKolommen: ["Groupe de produits", "Ingredient", "Quantite", "Unite", "Compte aussi comme", "De la (des) recette(s)"],
+            csvRecepten: ["Recettes choisies", "Combien de fois", "Donne"], volgensBron: "selon la recette d'origine", blz: "p.",
+            bestandsnaam: "liste-de-commande", datumTaal: "fr-BE",
+            receptgroepen: { "Voorgerechten": "Entr\u00e9es", "Hoofdgerechten": "Plats principaux", "Sauzen": "Sauces", "Desserts": "Desserts", "Ontbijt & Snacks": "Petit-d\u00e9jeuner & snacks", "Blauwe Hap": "Blauwe Hap" }
+        },
+        en: {
+            uitlegKop: "How this works.",
+            uitleg: "Choose the recipes you are going to cook and enter how many times you make each one. The app adds up all the ingredients into a single order list.",
+            uitlegPorties: "If a recipe says <b>30 portions</b>, then <b>1&times; = 30 portions</b>, 2&times; = 60 portions, and so on. So do not enter the number of people, but the number of times.",
+            uitlegBron: "If it says <b>as in the source recipe</b>, the cookbook gives no number of portions. 1&times; is then one preparation as printed in the book.",
+            bronTaal: "Recipe and ingredient names are in Dutch.",
+            stap1: "Choose recipes",
+            stap1Hint: "Search by name or pick a main group first. Tap a recipe to add it. You can also tap <b>Add to order list</b> on the recipe itself.",
+            zoek: "Search a recipe, for example eiersalade or nasi",
+            zoekLabel: "Search recipe", hoofdgroep: "Main group", alleGroepen: "All main groups",
+            resultaten: "Search results", geenRecept: "No recipe found.",
+            meerTreffers: (n) => `${n} more matches \u2014 narrow your search.`,
+            stap2: "Chosen recipes", nietsGekozen: "Nothing chosen yet.", vulIn: "Enter how many times you make each recipe.",
+            kolRecept: "Recipe", kolHoeVaak: "How often", kolLevertOp: "Yields", verwijderen: "Remove",
+            hoeVaakLabel: (naam) => `How many times do you make ${naam}`, verwijderLabel: (naam) => `Remove ${naam}`,
+            porties: (n) => `${n} portions`, keerMaal: (a, b) => `${a} \u00d7 ${b}`,
+            bereidingen: (n) => `${n} batch${n > 1 ? "es" : ""}`, geenPorties: "portion count not in the book",
+            basisPorties: (n) => `1\u00d7 = ${n} portions`, basisBron: "1\u00d7 = one batch as in the source recipe",
+            stap3: "Order list", afdrukken: "Print (A4)", excel: "Excel file (CSV)",
+            sortering: (x) => "Sorting: " + x, perGroep: "by product group", alfabetisch: "alphabetical",
+            wissen: "Clear list", wisVraag: "Clear the whole list?",
+            optieSamen: "Add up different names for the same product (Djah\u00e9 = ground ginger)",
+            optieHerkomst: "Show for each item which recipe it comes from",
+            eigenNaam: "Add an item yourself, for example aluminium foil", eigenAantal: "How much",
+            eigenToe: "Add", eigenLabel: "Item name", aantalLabel: "Quantity", eenheidLabel: "Unit",
+            kiesEerst: "Choose one or more recipes first.", nietGeladen: "The recipe list could not be loaded.",
+            telling: (n) => `${n} item${n === 1 ? "" : "s"} to weigh out`, tellingVrij: (n) => ` \u00b7 ${n} to taste`,
+            naarSmaak: "to taste", ookGeteld: "also counted as:", uitRecept: "from:", zelfToegevoegd: "added by you",
+            alleArtikelen: "All items", groepVrij: "To taste / no quantity given",
+            stuks: "pcs", stuk: "pc", geenEenheid: "none",
+            vanLijst: "Take off the list (already in stock)", vanLijstLabel: (naam) => `Take ${naam} off the list`,
+            geschrapt: (n) => `${n} item${n === 1 ? "" : "s"} taken off the list by you.`, weerTonen: "Show again",
+            letOpKop: "Check these yourself.",
+            letOp: "These lines were deliberately not added up. Names that look alike can be different products (fresh versus ground), and the same product given in two units is never added together:",
+            letOpSlot: "Do they belong together after all? Then put the names together in producten.js, under SYNONIEMEN.",
+            letOpMeer: (n) => `\u2026 and ${n} more.`,
+            tweeEenheden: (naam, a, b) => `${naam}: appears twice, in ${a} and in ${b}`,
+            meerProducten: (naam) => `${naam}: looks like several products on one line, with a single quantity`,
+            printKop: "Kitchen order list", opgemaakt: (d) => `Drawn up on ${d} \u00b7 `,
+            csvKolommen: ["Product group", "Ingredient", "Quantity", "Unit", "Also counted as", "From recipe(s)"],
+            csvRecepten: ["Chosen recipes", "How often", "Yields"], volgensBron: "as in the source recipe", blz: "p.",
+            bestandsnaam: "order-list", datumTaal: "en-GB",
+            receptgroepen: { "Voorgerechten": "Starters", "Hoofdgerechten": "Main courses", "Sauzen": "Sauces", "Desserts": "Desserts", "Ontbijt & Snacks": "Breakfast & snacks", "Blauwe Hap": "Blauwe Hap" }
+        }
+    };
+    const taalNu = () => { let t = "nl"; try { t = localStorage.getItem("nac-lang") || "nl"; } catch (e) {} return TEKST[t] ? t : "nl"; };
+    const T = () => TEKST[taalNu()];
+    // Naam van een receptgroep in de gekozen taal (zelfde lijst als recepten.js)
+    const receptGroep = (g) => (T().receptgroepen || {})[g] || g;
+    // Naam van een productgroep in de gekozen taal (vertalingen in producten.js)
+    const groepNaam = (g) => {
+        const v = (window.GROEPNAMEN || {})[g];
+        return v && v[taalNu()] ? v[taalNu()] : g;
+    };
+
     // Eigen opslagsleutel: alle apps op dit adres delen een opslag.
     const SLEUTEL = "eac-v3-bestellijst";
 
@@ -107,7 +259,8 @@
     function schrijf(totaal, soort) {
         if (soort === "g") return totaal >= 1000 ? { h: cijfer(totaal / 1000, 2), e: "kg" } : { h: cijfer(totaal, 1), e: "g" };
         if (soort === "ml") return totaal >= 1000 ? { h: cijfer(totaal / 1000, 2), e: "l" } : { h: cijfer(totaal, 0), e: "ml" };
-        return { h: cijfer(totaal, 2), e: (soort || "stuks") === "stuks" && totaal === 1 ? "stuk" : (soort || "stuks") };
+        if ((soort || "stuks") === "stuks") return { h: cijfer(totaal, 2), e: totaal === 1 ? T().stuk : T().stuks };
+        return { h: cijfer(totaal, 2), e: soort };
     }
 
     // ---------------------------------------------------------
@@ -214,7 +367,7 @@
     }
     function basisTekst(recept) {
         const p = portiesPerKeer(recept);
-        return p ? "1× = " + p + " porties" : "1× = één bereiding volgens het bronrecept";
+        return p ? T().basisPorties(p) : T().basisBron;
     }
 
     // ---------------------------------------------------------
@@ -316,7 +469,7 @@
         // Zelf toegevoegde producten erbij, zelf geschrapte eruit.
         handmatig.forEach((h, i) => regels.push({
             groep: productgroep(h.naam), naam: h.naam, basis: "eigen-" + i, stammen: [],
-            hoeveelheid: h.hoeveelheid, eenheid: h.eenheid, ook: [], uit: ["zelf toegevoegd"],
+            hoeveelheid: h.hoeveelheid, eenheid: h.eenheid, ook: [], uit: [T().zelfToegevoegd],
             vrij: !h.hoeveelheid, eigen: true
         }));
         const weg = new Set(geschrapt);
@@ -349,7 +502,7 @@
             const raak = r.basis.split(" ").filter((w) => losseProducten.has(w));
             if (raak.length >= 2) {
                 gecombineerd.add(r.basis);
-                meld(`${r.naam}: lijkt meerdere producten op \u00e9\u00e9n regel, met \u00e9\u00e9n hoeveelheid`);
+                meld(T().meerProducten(r.naam));
             }
         });
 
@@ -358,7 +511,7 @@
                 const A = alles[i], B = alles[j];
                 if (A.naam === B.naam) {
                     if (!A.vrij && !B.vrij && A.eenheid !== B.eenheid)
-                        meld(`${A.naam}: staat er twee keer op, in ${A.eenheid} en in ${B.eenheid}`);
+                        meld(T().tweeEenheden(A.naam, A.eenheid, B.eenheid));
                     continue;
                 }
                 // Is de een een onderdeel van een gecombineerde regel van de ander?
@@ -392,11 +545,11 @@
     function vulGroepen() {
         const groepen = [...new Set(ALLE.map((r) => r.group).filter(Boolean))].sort();
         const tel = (g) => ALLE.filter((r) => r.group === g).length;
-        $("blGroep").innerHTML = '<option value="">Alle hoofdgroepen</option>' +
-            groepen.map((g) => `<option value="${veilig(g)}">${veilig(g)} (${tel(g)})</option>`).join("");
+        $("blGroep").innerHTML = `<option value="">${veilig(T().alleGroepen)}</option>` +
+            groepen.map((g) => `<option value="${veilig(g)}">${veilig(receptGroep(g))} (${tel(g)})</option>`).join("");
         // Zodat er bij het openen meteen iets te kiezen valt
         $("blChips").innerHTML = groepen.map((g) =>
-            `<button type="button" class="bl-chip" data-groep="${veilig(g)}">${veilig(g)} <small>${tel(g)}</small></button>`).join("");
+            `<button type="button" class="bl-chip" data-groep="${veilig(g)}">${veilig(receptGroep(g))} <small>${tel(g)}</small></button>`).join("");
     }
 
     function merkChip() {
@@ -418,13 +571,13 @@
         const totaal = treffers.length;
         treffers = treffers.slice(0, 60);
 
-        if (!totaal) { ul.innerHTML = '<li class="bl-geen">Geen recept gevonden.</li>'; return; }
+        if (!totaal) { ul.innerHTML = `<li class="bl-geen">${veilig(T().geenRecept)}</li>`; return; }
         ul.innerHTML = treffers.map((r) => `<li><button type="button" class="bl-res" data-id="${veilig(r.id)}">
             <span class="plus" aria-hidden="true">+</span>
             <span class="wat"><span class="naam">${veilig(r.name)}</span>
-            <span class="bron">${veilig(r.group || "")}${r.book ? " · " + veilig(r.book) : ""}${r.page ? ", blz. " + veilig(r.page) : ""} · ${veilig(basisTekst(r))}</span></span>
+            <span class="bron">${veilig(receptGroep(r.group || ""))}${r.book ? " · " + veilig(r.book) : ""}${r.page ? ", " + veilig(T().blz) + " " + veilig(r.page) : ""} · ${veilig(basisTekst(r))}</span></span>
             </button></li>`).join("") +
-            (totaal > treffers.length ? `<li class="bl-geen">Nog ${totaal - treffers.length} andere treffers — zoek wat preciezer.</li>` : "");
+            (totaal > treffers.length ? `<li class="bl-geen">${veilig(T().meerTreffers(totaal - treffers.length))}</li>` : "");
     }
 
     function tekenGekozen() {
@@ -432,24 +585,24 @@
         const hint = $("blGekozenHint");
         if (!keuze.length) {
             doel.innerHTML = "";
-            hint.textContent = "Nog niets gekozen.";
+            hint.textContent = T().nietsGekozen;
             return;
         }
-        hint.textContent = "Vul in hoe vaak je elk recept maakt.";
+        hint.textContent = T().vulIn;
         doel.innerHTML = `<table class="bl-tabel"><thead><tr>
-            <th>Recept</th><th>Hoe vaak</th><th>Levert op</th><th aria-label="Verwijderen"></th>
+            <th>${veilig(T().kolRecept)}</th><th>${veilig(T().kolHoeVaak)}</th><th>${veilig(T().kolLevertOp)}</th><th aria-label="${veilig(T().verwijderen)}"></th>
             </tr></thead><tbody>` + keuze.map(({ id, keer }) => {
             const r = PER_ID[id];
             const p = portiesPerKeer(r);
             const maal = Number(keer) > 0 ? Number(keer) : 1;
             return `<tr>
                 <td><span class="r-naam">${veilig(r.name)}</span>
-                    <span class="r-bron">${veilig(r.group || "")}${r.book ? " · " + veilig(r.book) : ""} · ${veilig(basisTekst(r))}</span></td>
-                <td><input type="number" min="1" step="1" value="${maal}" data-keer="${veilig(id)}" aria-label="Hoe vaak maak je ${veilig(r.name)}"> &times;</td>
+                    <span class="r-bron">${veilig(receptGroep(r.group || ""))}${r.book ? " · " + veilig(r.book) : ""} · ${veilig(basisTekst(r))}</span></td>
+                <td><input type="number" min="1" step="1" value="${maal}" data-keer="${veilig(id)}" aria-label="${veilig(T().hoeVaakLabel(r.name))}"> &times;</td>
                 <td class="bl-porties">${p
-                    ? `<b>${maal * p} porties</b><small>${maal} × ${p}</small>`
-                    : `<b>${maal} bereiding${maal > 1 ? "en" : ""}</b><small>aantal porties niet in het boek</small>`}</td>
-                <td><button type="button" class="bl-weg" data-weg="${veilig(id)}" aria-label="${veilig(r.name)} verwijderen">&times;</button></td>
+                    ? `<b>${veilig(T().porties(maal * p))}</b><small>${veilig(T().keerMaal(maal, p))}</small>`
+                    : `<b>${veilig(T().bereidingen(maal))}</b><small>${veilig(T().geenPorties)}</small>`}</td>
+                <td><button type="button" class="bl-weg" data-weg="${veilig(id)}" aria-label="${veilig(T().verwijderLabel(r.name))}">&times;</button></td>
             </tr>`;
         }).join("") + "</tbody></table>";
     }
@@ -457,63 +610,60 @@
     function tekenLijst() {
         const doel = $("blLijst");
         const knopPrint = $("blPrint"), knopCsv = $("blCsv");
-        $("blSorteer").textContent = "Sortering: " + (perGroep ? "per productgroep" : "alfabetisch");
+        $("blSorteer").textContent = T().sortering(perGroep ? T().perGroep : T().alfabetisch);
         $("blHerkomst").checked = toonHerkomst;
         $("blSamenvoegen").checked = samenvoegen;
 
         if (!keuze.length) {
-            doel.innerHTML = '<p class="bl-leeg">Kies eerst een of meer recepten.</p>';
+            doel.innerHTML = `<p class="bl-leeg">${veilig(T().kiesEerst)}</p>`;
             $("blTelling").textContent = "";
             knopPrint.hidden = knopCsv.hidden = true;
             return;
         }
         const { regels, vrije, opletten, verborgen } = bouwLijst();
         knopPrint.hidden = knopCsv.hidden = !(regels.length || vrije.length);
-        $("blTelling").textContent = `${regels.length} af te wegen artikel${regels.length === 1 ? "" : "en"}` +
-            (vrije.length ? ` · ${vrije.length} naar smaak` : "");
+        $("blTelling").textContent = T().telling(regels.length) + (vrije.length ? T().tellingVrij(vrije.length) : "");
 
         const regelHtml = (r) => `<li class="bl-regel${r.eigen ? " eigen" : ""}"><span class="bl-vak" aria-hidden="true"></span>
-            <span class="ing">${veilig(r.naam)}${r.eigen ? '<small class="ook">zelf toegevoegd</small>' : ""}${r.ook && r.ook.length ? `<small class="ook">ook geteld als: ${veilig(r.ook.join(", "))}</small>` : ""}<small class="${toonHerkomst ? "" : "verborgen"}">uit: ${veilig(r.uit.join(", "))}</small></span>
-            <span class="hoev${r.vrij ? " vrij" : ""}">${r.vrij ? "naar smaak" : veilig(r.hoeveelheid + (r.eenheid ? " " + r.eenheid : ""))}</span>
-            <button type="button" class="bl-schrap bl-niet-printen" data-schrap="${veilig(r.basis)}" aria-label="${veilig(r.naam)} van de lijst halen" title="Van de lijst halen (heb ik al)">&times;</button></li>`;
+            <span class="ing">${veilig(r.naam)}${r.eigen ? `<small class="ook">${veilig(T().zelfToegevoegd)}</small>` : ""}${r.ook && r.ook.length ? `<small class="ook">${veilig(T().ookGeteld)} ${veilig(r.ook.join(", "))}</small>` : ""}<small class="${toonHerkomst ? "" : "verborgen"}">${veilig(T().uitRecept)} ${veilig(r.uit.join(", "))}</small></span>
+            <span class="hoev${r.vrij ? " vrij" : ""}">${r.vrij ? veilig(T().naarSmaak) : veilig(r.hoeveelheid + (r.eenheid ? " " + r.eenheid : ""))}</span>
+            <button type="button" class="bl-schrap bl-niet-printen" data-schrap="${veilig(r.basis)}" aria-label="${veilig(T().vanLijstLabel(r.naam))}" title="${veilig(T().vanLijst)}">&times;</button></li>`;
 
         let html = '<div class="bl-lijst-kolommen">';
         if (perGroep) {
             GROEPORDE.forEach((g) => {
                 const inGroep = regels.filter((r) => r.groep === g).sort((a, b) => a.naam.localeCompare(b.naam, "nl"));
                 if (!inGroep.length) return;
-                html += `<div class="bl-groep"><h3>${veilig(g)}</h3><ul class="bl-regels">${inGroep.map(regelHtml).join("")}</ul></div>`;
+                html += `<div class="bl-groep"><h3>${veilig(groepNaam(g))}</h3><ul class="bl-regels">${inGroep.map(regelHtml).join("")}</ul></div>`;
             });
         } else {
             const op = regels.slice().sort((a, b) => a.naam.localeCompare(b.naam, "nl"));
-            html += `<div class="bl-groep"><h3>Alle artikelen</h3><ul class="bl-regels">${op.map(regelHtml).join("")}</ul></div>`;
+            html += `<div class="bl-groep"><h3>${veilig(T().alleArtikelen)}</h3><ul class="bl-regels">${op.map(regelHtml).join("")}</ul></div>`;
         }
         if (vrije.length) {
             const op = vrije.slice().sort((a, b) => a.naam.localeCompare(b.naam, "nl"));
-            html += `<div class="bl-groep"><h3>Naar smaak / geen hoeveelheid vermeld</h3><ul class="bl-regels">${op.map(regelHtml).join("")}</ul></div>`;
+            html += `<div class="bl-groep"><h3>${veilig(T().groepVrij)}</h3><ul class="bl-regels">${op.map(regelHtml).join("")}</ul></div>`;
         }
         html += "</div>";
         if (opletten.length) {
             const paren = opletten.slice(0, 15);
-            html += `<div class="bl-oppassen bl-niet-printen"><b>Even zelf nakijken.</b> Deze regels zijn bewust
-                niet samengeteld. Namen die op elkaar lijken kunnen andere producten zijn (vers tegenover poeder),
-                en hetzelfde product in twee eenheden telt de app nooit bij elkaar op:
+            html += `<div class="bl-oppassen bl-niet-printen"><b>${veilig(T().letOpKop)}</b> ${veilig(T().letOp)}
                 <ul>${paren.map((p) => `<li>${veilig(p)}</li>`).join("")}</ul>
-                ${opletten.length > paren.length ? `<p>\u2026 en nog ${opletten.length - paren.length} andere.</p>` : ""}
-                Hoort het toch bij elkaar? Zet de namen dan samen in producten.js, bij SYNONIEMEN.</div>`;
+                ${opletten.length > paren.length ? `<p>${veilig(T().letOpMeer(opletten.length - paren.length))}</p>` : ""}
+                ${veilig(T().letOpSlot)}</div>`;
         }
         if (verborgen) {
-            html += `<p class="bl-verborgen bl-niet-printen">${verborgen} artikel${verborgen === 1 ? "" : "en"} door jou van de lijst gehaald.
-                <button type="button" class="bl-tekstknop" id="blToonWeer">Weer tonen</button></p>`;
+            html += `<p class="bl-verborgen bl-niet-printen">${veilig(T().geschrapt(verborgen))}
+                <button type="button" class="bl-tekstknop" id="blToonWeer">${veilig(T().weerTonen)}</button></p>`;
         }
         doel.innerHTML = html;
 
         // Kop voor het afdrukken
         const nu = new Date();
-        const datum = nu.toLocaleDateString("nl-BE", { day: "2-digit", month: "long", year: "numeric" });
-        $("blAfdrukInfo").textContent = `Opgemaakt op ${datum} · ` + keuze.map(({ id, keer }) => {
+        const datum = nu.toLocaleDateString(T().datumTaal, { day: "2-digit", month: "long", year: "numeric" });
+        $("blAfdrukInfo").textContent = T().opgemaakt(datum) + keuze.map(({ id, keer }) => {
             const r = PER_ID[id], p = portiesPerKeer(r), maal = Number(keer) > 0 ? Number(keer) : 1;
-            return `${r.name} ${maal}×${p ? " (" + maal * p + " porties)" : ""}`;
+            return `${r.name} ${maal}×${p ? " (" + T().porties(maal * p) + ")" : ""}`;
         }).join(" · ");
     }
 
@@ -529,18 +679,18 @@
     function csv() {
         const { regels, vrije } = bouwLijst();
         const rij = (velden) => velden.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";");
-        const uit = [rij(["Productgroep", "Ingredient", "Hoeveelheid", "Eenheid", "Ook geteld als", "Uit recept(en)"])];
+        const uit = [rij(T().csvKolommen)];
         const alles = (perGroep
             ? GROEPORDE.flatMap((g) => regels.filter((r) => r.groep === g).sort((a, b) => a.naam.localeCompare(b.naam, "nl")))
             : regels.slice().sort((a, b) => a.naam.localeCompare(b.naam, "nl"))
         ).concat(vrije.slice().sort((a, b) => a.naam.localeCompare(b.naam, "nl")));
-        alles.forEach((r) => uit.push(rij([r.groep, r.naam, r.vrij ? "naar smaak" : r.hoeveelheid, r.vrij ? "" : (r.eenheid || "stuks"), (r.ook || []).join(", "), r.uit.join(", ")])));
+        alles.forEach((r) => uit.push(rij([groepNaam(r.groep), r.naam, r.vrij ? T().naarSmaak : r.hoeveelheid, r.vrij ? "" : (r.eenheid || T().stuks), (r.ook || []).join(", "), r.uit.join(", ")])));
 
         uit.push("");
-        uit.push(rij(["Gekozen recepten", "Hoe vaak", "Levert op", "", "", ""]));
+        uit.push(rij(T().csvRecepten.concat(["", "", ""])));
         keuze.forEach(({ id, keer }) => {
             const r = PER_ID[id], p = portiesPerKeer(r), maal = Number(keer) > 0 ? Number(keer) : 1;
-            uit.push(rij([r.name, maal + "×", p ? maal * p + " porties" : "volgens bronrecept", r.book || "", r.page ? "blz. " + r.page : ""]));
+            uit.push(rij([r.name, maal + "×", p ? T().porties(maal * p) : T().volgensBron, r.book || "", r.page ? T().blz + " " + r.page : "", ""]));
         });
 
         // ﻿ zodat Excel de accenten goed leest; puntkomma's omdat Excel hier met komma's rekent
@@ -548,7 +698,7 @@
         const a = document.createElement("a");
         const d = new Date();
         a.href = URL.createObjectURL(blob);
-        a.download = `bestellijst-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}.csv`;
+        a.download = `${T().bestandsnaam}-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}.csv`;
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     }
@@ -559,71 +709,69 @@
     let skeletKlaar = false;
 
     function bouwSkelet(doel) {
+        const t = T();
         doel.innerHTML = `
         <div class="bl-wrap">
             <div class="bl-afdrukkop">
-                <h1>Bestellijst keuken</h1>
+                <h1>${t.printKop}</h1>
                 <p id="blAfdrukInfo"></p>
             </div>
 
             <section class="bl-kaart bl-niet-printen">
                 <div class="bl-let">
-                    <b>Zo werkt het.</b> Kies hieronder de recepten die je gaat maken en vul per recept in hoe vaak je het maakt.
-                    De app telt alle ingredi\u00ebnten bij elkaar op tot \u00e9\u00e9n bestellijst.
+                    <b>${t.uitlegKop}</b> ${t.uitleg}
                     <ul>
-                        <li>Staat er bij een recept <b>30 porties</b>, dan is <b>1&times; = 30 porties</b>, 2&times; = 60 porties, enzovoort.
-                            Vul dus niet het aantal personen in, maar het aantal keer.</li>
-                        <li>Staat er <b>volgens bronrecept</b>, dan vermeldt het kookboek geen aantal porties.
-                            1&times; is dan \u00e9\u00e9n bereiding zoals die in het boek staat.</li>
+                        <li>${t.uitlegPorties}</li>
+                        <li>${t.uitlegBron}</li>
+                        ${t.bronTaal ? `<li>${t.bronTaal}</li>` : ""}
                     </ul>
                 </div>
 
-                <h2><span class="nr">1</span>Recepten kiezen</h2>
-                <p class="bl-hint">Zoek op naam of kies eerst een hoofdgroep. Tik op een recept om het toe te voegen.
-                    Je kunt ook bij een recept zelf op <b>Op de bestellijst</b> tikken.</p>
+                <h2><span class="nr">1</span>${t.stap1}</h2>
+                <p class="bl-hint">${t.stap1Hint}</p>
                 <div class="bl-zoekrij">
-                    <input id="blZoek" type="search" placeholder="Zoek een recept, bijvoorbeeld eiersalade of nasi" autocomplete="off" aria-label="Recept zoeken">
-                    <select id="blGroep" aria-label="Hoofdgroep"></select>
+                    <input id="blZoek" type="search" placeholder="${t.zoek}" autocomplete="off" aria-label="${t.zoekLabel}">
+                    <select id="blGroep" aria-label="${t.hoofdgroep}"></select>
                 </div>
                 <div class="bl-chips" id="blChips"></div>
-                <ul id="blResultaten" aria-label="Zoekresultaten"></ul>
+                <ul id="blResultaten" aria-label="${t.resultaten}"></ul>
             </section>
 
             <section class="bl-kaart bl-niet-printen">
-                <h2><span class="nr">2</span>Gekozen recepten</h2>
-                <p class="bl-hint" id="blGekozenHint">Nog niets gekozen.</p>
+                <h2><span class="nr">2</span>${t.stap2}</h2>
+                <p class="bl-hint" id="blGekozenHint">${t.nietsGekozen}</p>
                 <div id="blGekozen"></div>
             </section>
 
             <section class="bl-kaart">
                 <div class="bl-kop-lijst">
-                    <h2><span class="nr bl-niet-printen">3</span>Bestellijst</h2>
+                    <h2><span class="nr bl-niet-printen">3</span>${t.stap3}</h2>
                     <p class="bl-telling" id="blTelling"></p>
                 </div>
                 <div class="bl-knoppen">
                     <button type="button" class="bl-btn" id="blPrint" hidden>
                         <svg viewBox="0 0 24 24"><path d="M7 8V4h10v4M7 18H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>
-                        Afdrukken (A4)
+                        ${t.afdrukken}
                     </button>
                     <button type="button" class="bl-btn" id="blCsv" hidden>
                         <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>
-                        Excel-bestand (CSV)
+                        ${t.excel}
                     </button>
-                    <button type="button" class="bl-btn zacht" id="blSorteer">Sortering: per productgroep</button>
-                    <button type="button" class="bl-btn zacht" id="blWis">Lijst wissen</button>
+                    <button type="button" class="bl-btn zacht" id="blSorteer"></button>
+                    <button type="button" class="bl-btn zacht" id="blWis">${t.wissen}</button>
                 </div>
-                <label class="bl-optie bl-niet-printen"><input type="checkbox" id="blSamenvoegen" checked> Verschillende namen voor hetzelfde product samentellen (Djah\u00e9 = gemberpoeder)</label>
-                <label class="bl-optie bl-niet-printen"><input type="checkbox" id="blHerkomst"> Bij elk artikel tonen uit welk recept het komt</label>
+                <label class="bl-optie bl-niet-printen"><input type="checkbox" id="blSamenvoegen" checked> ${t.optieSamen}</label>
+                <label class="bl-optie bl-niet-printen"><input type="checkbox" id="blHerkomst"> ${t.optieHerkomst}</label>
                 <div class="bl-eigen bl-niet-printen">
-                    <input id="blEigenNaam" type="text" placeholder="Zelf een artikel erbij, bijvoorbeeld aluminiumfolie" aria-label="Naam van het artikel">
-                    <input id="blEigenAantal" type="text" inputmode="decimal" placeholder="Hoeveel" aria-label="Hoeveelheid">
-                    <select id="blEigenEenheid" aria-label="Eenheid">
-                        <option value="stuks">stuks</option><option value="g">g</option><option value="kg">kg</option>
-                        <option value="ml">ml</option><option value="l">l</option><option value="">geen</option>
+                    <input id="blEigenNaam" type="text" placeholder="${t.eigenNaam}" aria-label="${t.eigenLabel}">
+                    <input id="blEigenAantal" type="text" inputmode="decimal" placeholder="${t.eigenAantal}" aria-label="${t.aantalLabel}">
+                    <select id="blEigenEenheid" aria-label="${t.eenheidLabel}">
+                        <option value="stuks">${t.stuks}</option><option value="g">g</option><option value="kg">kg</option>
+                        <option value="ml">ml</option><option value="l">l</option><option value="">${t.geenEenheid}</option>
                     </select>
-                    <button type="button" class="bl-btn zacht" id="blEigenToe">Toevoegen</button>
+                    <button type="button" class="bl-btn zacht" id="blEigenToe">${t.eigenToe}</button>
                 </div>
-                <div id="blLijst"><p class="bl-leeg">Kies eerst een of meer recepten.</p></div>
+                <div id="blLijst"><p class="bl-leeg">${veilig(t.kiesEerst)}</p></div>
             </section>
         </div>`;
         koppelKnoppen();
@@ -643,8 +791,8 @@
         const cel = veld.closest("tr") && veld.closest("tr").querySelector(".bl-porties");
         if (!cel) return;
         const r = PER_ID[k.id], p = portiesPerKeer(r), maal = k.keer;
-        cel.innerHTML = p ? `<b>${maal * p} porties</b><small>${maal} \u00d7 ${p}</small>`
-            : `<b>${maal} bereiding${maal > 1 ? "en" : ""}</b><small>aantal porties niet in het boek</small>`;
+        cel.innerHTML = p ? `<b>${veilig(T().porties(maal * p))}</b><small>${veilig(T().keerMaal(maal, p))}</small>`
+            : `<b>${veilig(T().bereidingen(maal))}</b><small>${veilig(T().geenPorties)}</small>`;
     }
 
     function koppelKnoppen() {
@@ -706,10 +854,27 @@
         $("blEigenAantal").addEventListener("keydown", (e) => { if (e.key === "Enter") eigenToe(); });
 
         $("blWis").addEventListener("click", () => {
-            if (keuze.length && !confirm("De hele lijst wissen?")) return;
+            if (keuze.length && !confirm(T().wisVraag)) return;
             keuze = []; geschrapt = []; handmatig = []; tekenAlles();
         });
     }
+
+    // ---------------------------------------------------------
+    // Taal wisselen: het scherm staat vol tekst, dus opnieuw opbouwen.
+    // De knoppen worden daarbij vanzelf weer aangesloten.
+    // ---------------------------------------------------------
+    function hertaal() {
+        if (!skeletKlaar) return;
+        const doel = document.getElementById("bestellijstView");
+        if (!doel) return;
+        bouwSkelet(doel);
+        if (ALLE.length) vulGroepen();
+        tekenAlles();
+    }
+    // setTimeout: app.js bewaart de nieuwe taal in dezelfde klik, dus wij
+    // wachten tot die klaar is voordat we opnieuw tekenen.
+    document.querySelectorAll(".lang-btn").forEach((b) =>
+        b.addEventListener("click", () => setTimeout(hertaal, 0)));
 
     // ---------------------------------------------------------
     // 10. Naar buiten toe
@@ -724,7 +889,7 @@
             koppelData();
             if (!skeletKlaar) bouwSkelet(doel);
             if (!ALLE.length) {
-                $("blLijst").innerHTML = '<p class="bl-leeg">De receptenlijst kon niet geladen worden.</p>';
+                $("blLijst").innerHTML = `<p class="bl-leeg">${veilig(T().nietGeladen)}</p>`;
                 return;
             }
             vulGroepen();

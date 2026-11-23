@@ -61,6 +61,20 @@ window.VULWOORDEN = [
     "evt", "naar", "smaak", "ca", "ongeveer", "tot", "ter", "als", "uit", "wat", "circa"
 ];
 
+// ---------- 1d. Productgroepen in het Frans en Engels ----------
+// De groepsnamen hierboven in GROEPEN zijn Nederlands; dit zijn de
+// vertalingen voor de kopjes op de bestellijst. Voeg je zelf een groep
+// toe, zet hem dan ook hier neer, anders blijft hij Nederlands.
+window.GROEPNAMEN = {
+    "Toko / Aziatisch":              { fr: "\u00c9picerie asiatique", en: "Asian groceries" },
+    "Vis & zeevruchten":             { fr: "Poisson & fruits de mer",  en: "Fish & seafood" },
+    "Vlees & gevogelte":             { fr: "Viande & volaille",        en: "Meat & poultry" },
+    "Zuivel & eieren":               { fr: "Produits laitiers & \u0153ufs", en: "Dairy & eggs" },
+    "Groenten & fruit":              { fr: "L\u00e9gumes & fruits",        en: "Vegetables & fruit" },
+    "Droge waren, kruiden & oli\u00ebn": { fr: "\u00c9picerie s\u00e8che, \u00e9pices & huiles", en: "Dry goods, spices & oils" },
+    "Overig":                        { fr: "Divers",                   en: "Other" }
+};
+
 // ---------- 2. Synoniemen: echt hetzelfde product ----------
 // naam      = wat er op de bestellijst komt te staan
 // varianten = schrijfwijzen zoals ze in de boeken staan (volgorde maakt niet uit)
