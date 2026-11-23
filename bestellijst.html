@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAC Performance Support | EA Catering – Bestellijst (losse pagina)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="bestellijst.css">
+<meta name="theme-color" content="#0b1530">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+</head>
+<body>
+<!--
+    Losse bestellijstpagina. Dezelfde code als het tabblad Bestellijst in de
+    app; alleen de omlijsting verschilt. Handig om los te testen of te
+    gebruiken zolang het tabblad nog niet is vrijgegeven.
+-->
+<header class="kop-balk bl-niet-printen">
+    <div class="hero-top">
+        <div class="merk">
+            <img class="merk-logo" src="nac-logo.png" alt="Navy Academy embleem">
+            <div>
+                <p class="eyebrow">NAC Performance Support</p>
+                <h1>Bestellijst</h1>
+            </div>
+        </div>
+        <a class="bl-btn zacht" href="index.html" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)">&larr; Terug naar de app</a>
+    </div>
+</header>
+
+<div id="bestellijstView"></div>
+
+<footer class="bl-niet-printen">
+    <img src="nac-logo.png" alt="" class="footer-logo">
+    <p>&copy; 2026 Navy Academy Oostende (NAC) - Direct support To Production (DS2P).</p>
+</footer>
+
+<script>window.BL_LOSSE_PAGINA = true;</script>
+<script src="producten.js"></script>
+<script src="recepten-data.js"></script>
+<script src="bestellijst.js"></script>
+</body>
+</html>

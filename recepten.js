@@ -34,7 +34,8 @@
     // ===== TEKSTEN PER TAAL =====
     const TEKST = {
         nl: {
-            tabVideos: "Instructievideo's", tabRecepten: "Recepten", titel: "NAC Performance Support | EA Catering – Recepten",
+            tabVideos: "Instructievideo's", tabRecepten: "Recepten", tabBestellijst: "Bestellijst",
+            opBestellijst: "Op de bestellijst", staatErop: n => `Staat erop (${n}\u00d7)`, bestellijstTitel: "NAC Performance Support | EA Catering \u2013 Bestellijst", titel: "NAC Performance Support | EA Catering – Recepten",
             sub: "Navy Academy Oostende | DGI 2024, Klein Vers 240e en Selamat Makan deel 1–3",
             kop: "Zoek een recept",
             intro: "Typ een recept of ingrediënt, of kies hieronder een hoofdgroep. Bij een gouden afspeelknop hoort een instructievideo.",
@@ -55,7 +56,8 @@
             vanVideo: n => `Bekijk ${n} recept${n === 1 ? "" : "en"} met deze techniek`, vanVideoOnbekend: "Bekijk recepten met deze techniek", nlNoot: ""
         },
         fr: {
-            tabVideos: "Vidéos d'instruction", tabRecepten: "Recettes", titel: "NAC Performance Support | EA Catering – Recettes",
+            tabVideos: "Vidéos d'instruction", tabRecepten: "Recettes", tabBestellijst: "Liste de commande",
+            opBestellijst: "Sur la liste de commande", staatErop: n => `Sur la liste (${n}\u00d7)`, bestellijstTitel: "NAC Performance Support | EA Catering \u2013 Liste de commande", titel: "NAC Performance Support | EA Catering – Recettes",
             sub: "Navy Academy Oostende | DGI 2024, Klein Vers 240e et Selamat Makan 1–3",
             kop: "Rechercher une recette",
             intro: "Tapez une recette ou un ingrédient, ou choisissez un groupe ci-dessous. Un bouton doré renvoie à une vidéo d'instruction. Les recettes sont en néerlandais.",
@@ -76,7 +78,8 @@
             vanVideo: n => `Voir ${n} recette${n === 1 ? "" : "s"} avec cette technique`, vanVideoOnbekend: "Voir les recettes avec cette technique", nlNoot: "Texte de la recette en néerlandais."
         },
         en: {
-            tabVideos: "Instruction videos", tabRecepten: "Recipes", titel: "NAC Performance Support | EA Catering – Recipes",
+            tabVideos: "Instruction videos", tabRecepten: "Recipes", tabBestellijst: "Order list",
+            opBestellijst: "Add to order list", staatErop: n => `On the list (${n}\u00d7)`, bestellijstTitel: "NAC Performance Support | EA Catering \u2013 Order list", titel: "NAC Performance Support | EA Catering – Recipes",
             sub: "Navy Academy Oostende | DGI 2024, Klein Vers 240e and Selamat Makan 1–3",
             kop: "Find a recipe",
             intro: "Type a recipe or ingredient, or choose a group below. A gold play button links to an instruction video. The recipes are in Dutch.",
@@ -123,6 +126,16 @@
     const view = document.getElementById("receptenView");
     const tabVideos = document.getElementById("tabVideos");
     const tabRecepten = document.getElementById("tabRecepten");
+    // Derde tabblad. Staat het niet in de pagina of is het niet vrijgegeven,
+    // dan slaat alles wat hieronder met de bestellijst te maken heeft over.
+    const tabBestellijst = window.BESTELLIJST_ZICHTBAAR ? document.getElementById("tabBestellijst") : null;
+    const blView = document.getElementById("bestellijstView");
+    if (tabBestellijst) {
+        tabBestellijst.hidden = false;
+        // Drie knoppen passen anders niet op een telefoonscherm (zie bestellijst.css)
+        const balk = document.querySelector(".weergave");
+        if (balk) balk.classList.add("drie-tabs");
+    }
 
     // ---------- Video's: titel in de gekozen taal, uit de live videolijst ----------
     function videoVan(id) {
@@ -204,6 +217,10 @@
             const v = e.target.closest("[data-video]"); if (v) return speel(v.dataset.video);
             if (e.target.closest("#rcTerug")) return terugStap("recept");
             if (e.target.closest("#rcPrint")) return window.print();
+            if (e.target.closest("#rcOpLijst")) {        // recept op de bestellijst zetten
+                window.BESTELLIJST.voegToe(actief);
+                return;
+            }
             const d = e.target.closest("#rcDeel");
             if (d) {
                 const url = new URL(window.EAC_DEEL_BASIS || location.href); url.search = ""; url.searchParams.set("recept", actief);
@@ -360,7 +377,7 @@
                     <ol class="rc-stappen">${stappen}</ol>
                     ${r.tips ? `<div class="rc-kader"><b>${esc(T().tip)}</b>${r.tips.map(t => esc(t.charAt(0).toUpperCase() + t.slice(1))).join("<br>")}</div>` : ""}
                     <div class="rc-kader"><b>${esc(T().aandacht)}</b>${esc(r.note)}</div>
-                    <div class="rc-acties"><button type="button" class="rc-knop" id="rcPrint">${esc(T().print)}</button><button type="button" class="rc-knop rc-licht" id="rcDeel">${esc(T().deel)}</button></div>
+                    <div class="rc-acties"><button type="button" class="rc-knop" id="rcPrint">${esc(T().print)}</button><button type="button" class="rc-knop rc-licht" id="rcDeel">${esc(T().deel)}</button>${tabBestellijst ? `<button type="button" class="rc-knop bl-opknop" id="rcOpLijst">${esc(T().opBestellijst)}</button>` : ""}</div>
                 </section>
             </div>`;
         const wasDicht = el.hidden;
@@ -368,6 +385,7 @@
         document.getElementById("rcResultaten").hidden = true;
         document.getElementById("rcMelding").hidden = true;
         zetStand();
+        zetOpLijstKnop();
         if (wasDicht && !opnieuw) stapIn("recept");
         if (!zonderScroll || !opnieuw) window.scrollTo(0, 0);
     }
@@ -459,6 +477,8 @@
             if (tab === "recepten") {
                 p.set("tab", "recepten");
                 if (techniek) p.set("techniek", techniek);
+            } else if (tab === "bestellijst") {
+                p.set("tab", "bestellijst");
             }
             const q = p.toString();
             history.replaceState(history.state, "", location.pathname + (q ? "?" + q : ""));
@@ -466,12 +486,36 @@
     }
 
     function openTab(naam, opties) {
-        tab = naam === "recepten" ? "recepten" : "videos";
+        if (naam === "bestellijst" && !tabBestellijst) naam = "videos";      // niet vrijgegeven
+        tab = (naam === "recepten" || naam === "bestellijst") ? naam : "videos";
         const rc = tab === "recepten";
+        const bl = tab === "bestellijst";
         document.body.classList.toggle("rc-modus", rc);
+        document.body.classList.toggle("bl-modus", bl);
         view.hidden = !rc;
-        tabVideos.setAttribute("aria-selected", !rc);
+        if (blView) blView.hidden = !bl;
+        tabVideos.setAttribute("aria-selected", tab === "videos");
         tabRecepten.setAttribute("aria-selected", rc);
+        if (tabBestellijst) tabBestellijst.setAttribute("aria-selected", bl);
+
+        if (bl) {
+            // De bestellijst gebruikt dezelfde receptendata als het tabblad
+            // Recepten; laadData() haalt die maar \u00e9\u00e9n keer op.
+            // Het receptenscherm moet wel bestaan: laadData zet zijn
+            // laadmelding daarin. Zonder dit crasht de app als iemand de
+            // bestellijst opent zonder eerst bij de recepten te zijn geweest.
+            if (!view.firstChild) bouwSkelet();
+            document.title = T().bestellijstTitel;
+            return laadData().then(() => {
+                window.BESTELLIJST.open(blView);
+                zetAdres();
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+            }).catch(() => {
+                blView.innerHTML = '<div class="bl-wrap"><div class="bl-kaart">' +
+                    '<p class="bl-leeg">De recepten konden niet geladen worden. ' +
+                    'Controleer de verbinding en probeer het opnieuw.</p></div></div>';
+            });
+        }
         if (!rc) {
             document.title = (typeof L === "function" && L().titel) || document.title;
             zetAdres();
@@ -491,6 +535,31 @@
 
     tabVideos.addEventListener("click", () => openTab("videos"));
     tabRecepten.addEventListener("click", () => openTab("recepten"));
+    if (tabBestellijst) {
+        tabBestellijst.addEventListener("click", () => openTab("bestellijst"));
+        // Tellertje op de tabknop en de knop onder het recept bijwerken
+        const teller = document.createElement("span");
+        teller.className = "bl-teller";
+        teller.hidden = true;
+        tabBestellijst.appendChild(teller);
+        window.BESTELLIJST.bijWijziging = function () {
+            const n = window.BESTELLIJST.aantal();
+            teller.hidden = n === 0;
+            teller.textContent = n;
+            zetOpLijstKnop();
+        };
+        window.BESTELLIJST.bijWijziging();
+    }
+
+    // Knop onder een recept: tekst en teller laten kloppen
+    function zetOpLijstKnop() {
+        const knop = document.getElementById("rcOpLijst");
+        if (!knop || !actief || !window.BESTELLIJST) return;
+        const n = window.BESTELLIJST.aantalVoor(actief);
+        knop.textContent = n ? T().staatErop(n) : T().opBestellijst;
+        if (n) knop.dataset.aantal = n; else delete knop.dataset.aantal;
+        knop.classList.toggle("rc-licht", n > 0);
+    }
 
     // ---------- Afspeelscherm: link naar recepten met deze techniek ----------
     const modalInner = document.querySelector(".video-modal-inner");
@@ -515,7 +584,9 @@
     // ---------- Taal: meeschakelen met de NL/FR/EN-knoppen ----------
     function vertaalTabs() {
         document.querySelectorAll(".weergave [data-rc]").forEach(el => { el.textContent = T()[el.dataset.rc]; });
-        document.querySelector(".weergave").setAttribute("aria-label", T().tabVideos + " / " + T().tabRecepten);
+        document.querySelector(".weergave").setAttribute("aria-label",
+            T().tabVideos + " / " + T().tabRecepten + (tabBestellijst ? " / " + T().tabBestellijst : ""));
+        zetOpLijstKnop();
     }
     document.querySelectorAll(".lang-btn").forEach(b => b.addEventListener("click", () => {
         vertaalTabs();
@@ -529,7 +600,8 @@
     // ---------- Directe links ----------
     const p = new URLSearchParams(location.search);
     const recept = p.get("recept"), tech = p.get("techniek");
-    if (p.get("tab") === "recepten" || recept || tech) openTab("recepten", { recept: recept || undefined, techniek: tech || undefined, naarRecept: true });
+    if (p.get("tab") === "bestellijst" && tabBestellijst) openTab("bestellijst");
+    else if (p.get("tab") === "recepten" || recept || tech) openTab("recepten", { recept: recept || undefined, techniek: tech || undefined, naarRecept: true });
     // ?v=... (QR-code): app.js opende de video al vóór dit bestand; zet de receptenlink alsnog.
     const vid = p.get("v");
     if (vid && document.getElementById("videoModal").classList.contains("open")) {

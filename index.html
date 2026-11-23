@@ -11,14 +11,28 @@
         // Ingesloten in BeLADL (of een andere site)? Dan compacte weergave: ?embed=1
         if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");
     </script>
-    <link rel="stylesheet" href="styles.css?v=7">
-    <link rel="stylesheet" href="recepten.css?v=2">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="recepten.css">
+    <link rel="stylesheet" href="bestellijst.css">
     <meta name="theme-color" content="#0b1530">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="EA Catering">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <style>
+        /* Versieregel onderaan + berichtje na het bijwerken */
+        .versie-regel { margin-top: .4rem; font-size: .72rem; letter-spacing: .04em; opacity: .55; }
+        .bijgewerkt {
+            position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+            z-index: 60; max-width: calc(100% - 2rem);
+            padding: .6rem 1rem; border-radius: 999px;
+            background: #0b1530; color: #f4e3b8; border: 1px solid rgba(244,227,184,.35);
+            font-size: .85rem; box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.35);
+            opacity: 0; transition: opacity .25s ease;
+        }
+        .bijgewerkt.zichtbaar { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -45,6 +59,9 @@
         <button type="button" class="weergave-btn" role="tab" id="tabRecepten" aria-selected="false" aria-controls="receptenView">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6M9 12h4"/></svg><span data-rc="tabRecepten">Recepten</span>
         </button>
+        <button type="button" class="weergave-btn" role="tab" id="tabBestellijst" aria-selected="false" aria-controls="bestellijstView" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14l-1.2 13.2A2 2 0 0 1 15.8 19H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8h6M9 12h6"/></svg><span data-rc="tabBestellijst">Bestellijst</span>
+        </button>
     </div>
 </header>
 
@@ -70,9 +87,13 @@
 <!-- Tabblad Recepten: wordt gevuld door recepten.js (data in recepten-data.js, pas geladen bij openen) -->
 <div id="receptenView" hidden></div>
 
+<!-- Tabblad Bestellijst: wordt gevuld door bestellijst.js -->
+<div id="bestellijstView" hidden></div>
+
 <footer>
     <img src="nac-logo.png" alt="" class="footer-logo">
     <p data-i18n="footer">&copy; 2026 Navy Academy Oostende (NAC) - Direct support To Production (DS2P). Alle rechten voorbehouden.</p>
+    <p class="versie-regel" id="versieRegel"></p>
 </footer>
 
 <!-- Afspeelscherm -->
@@ -88,36 +109,98 @@
 </div>
 
 <!-- data.js haalt de videolijst uit de Google Sheet en start daarna app.js en favorieten.js -->
-<script src="data.js?v=5"></script>
+<!-- producten.js en bestellijst.js zijn klein; de zware receptendata laadt pas bij openen -->
+<script src="producten.js"></script>
+<script src="bestellijst.js"></script>
+<script src="data.js"></script>
 <script>
-if ("serviceWorker" in navigator) {
-    // LEERMODUS - automatisch bijwerken (ook op iPhone):
-    // Een app op het beginscherm van een iPhone wordt bij openen niet herladen, alleen
-    // "wakker gemaakt". Daarom vragen we bij elk openen zelf of er een nieuwe versie is
-    // (update). Staat er een nieuwe service worker klaar, dan neemt hij het over
-    // (controllerchange) en laden we de pagina één keer opnieuw. Speelt er net een
-    // video, dan wachten we tot het afspeelscherm dicht is.
-    const hadAlBeheer = !!navigator.serviceWorker.controller;
+// =============================================================
+// Automatisch bijwerken + versie in beeld
+// -------------------------------------------------------------
+// LEERMODUS - waarom dit nodig is:
+// Een app op het beginscherm wordt bij openen niet herladen, alleen
+// "wakker gemaakt". Daarom doen we drie dingen:
+//  1. bij elk openen zelf vragen of er een nieuwe versie is (update);
+//  2. staat er een nieuwe versie klaar, die meteen laten overnemen en
+//     de pagina eenmaal herladen (controllerchange);
+//  3. onderaan tonen welke versie er draait, zodat je het kunt zien.
+// Speelt er net een video, dan wachten we tot het scherm dicht is.
+// =============================================================
+(function () {
+    const VERSIEBESTAND = "versie.json";
+    const VLAG = "eac-v3-bijgewerkt";
+
+    // ---------- Versie onderaan tonen ----------
+    function toonVersie() {
+        fetch(VERSIEBESTAND, { cache: "no-store" })
+            .then(r => r.ok ? r.json() : null)
+            .then(v => {
+                const regel = document.getElementById("versieRegel");
+                if (regel && v && v.datum) regel.textContent = "Versie van " + v.datum;
+            })
+            .catch(() => {});
+    }
+
+    // ---------- Berichtje na het bijwerken ----------
+    function meldBijgewerkt() {
+        try { if (sessionStorage.getItem(VLAG) !== "1") return; sessionStorage.removeItem(VLAG); } catch (e) { return; }
+        const m = document.createElement("div");
+        m.className = "bijgewerkt";
+        m.setAttribute("role", "status");
+        m.textContent = "Bijgewerkt naar de nieuwste versie";
+        document.body.appendChild(m);
+        requestAnimationFrame(() => m.classList.add("zichtbaar"));
+        setTimeout(() => { m.classList.remove("zichtbaar"); setTimeout(() => m.remove(), 400); }, 3500);
+    }
+
+    toonVersie();
+    document.addEventListener("DOMContentLoaded", meldBijgewerkt);
+
+    if (!("serviceWorker" in navigator)) return;
+
+    // Was er bij het openen al een versie actief? Zo ja, dan betekent een
+    // wisseling van beheerder: er is een NIEUWE versie -> herladen.
+    // Bij de allereerste keer neemt de service worker pas tijdens het laden
+    // over; dat is geen nieuwe versie en dus geen reden om te herladen.
+    let beheerd = !!navigator.serviceWorker.controller;
     let herladen = false;
+
     function herlaad() {
         if (herladen) return;
         const modal = document.getElementById("videoModal");
-        if (modal && modal.classList.contains("open")) {
-            new MutationObserver((m, o) => { if (!modal.classList.contains("open")) { o.disconnect(); herlaad(); } })
-                .observe(modal, { attributes: true, attributeFilter: ["class"] });
+        if (modal && modal.classList.contains("open")) {      // video speelt: even wachten
+            new MutationObserver((m, o) => {
+                if (!modal.classList.contains("open")) { o.disconnect(); herlaad(); }
+            }).observe(modal, { attributes: true, attributeFilter: ["class"] });
             return;
         }
         herladen = true;
+        try { sessionStorage.setItem(VLAG, "1"); } catch (e) {}
         location.reload();
     }
-    navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadAlBeheer) herlaad(); });
-    navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" }).then(reg => {
-        const controleer = () => reg.update().catch(() => {});
-        document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") controleer(); });
-        window.addEventListener("pageshow", e => { if (e.persisted) controleer(); });
-        setInterval(controleer, 30 * 60 * 1000);   // ook als de app lang openstaat
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (beheerd) herlaad(); else beheerd = true;
     });
-}
+
+    navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" }).then((reg) => {
+        const controleer = () => reg.update().catch(() => {});
+        // Staat er al een nieuwe versie te wachten? Laat hem overnemen.
+        if (reg.waiting) reg.waiting.postMessage("neem-over");
+        reg.addEventListener("updatefound", () => {
+            const nieuw = reg.installing;
+            if (nieuw) nieuw.addEventListener("statechange", () => {
+                if (nieuw.state === "installed" && reg.waiting) reg.waiting.postMessage("neem-over");
+            });
+        });
+        controleer();                                                     // meteen bij het openen
+        document.addEventListener("visibilitychange", () => {             // en bij terugkomen in de app
+            if (document.visibilityState === "visible") { controleer(); toonVersie(); }
+        });
+        window.addEventListener("pageshow", (e) => { if (e.persisted) controleer(); });
+        setInterval(controleer, 30 * 60 * 1000);                          // ook als de app lang openstaat
+    });
+})();
 </script>
 </body>
 </html>
