@@ -3,7 +3,7 @@
 Instructievideo's keukentechnieken voor de Navy Academy Oostende (NAC), in de navy & goud huisstijl.
 
 - Live: https://ds2p-nac-oostende.github.io/EA-Cateringv3/
-- Oud ontwerp (blijft ongewijzigd bewaard): https://ron78nl.github.io/EA-Cateringv2/
+- Oud ontwerp (bewaard, staat nog op het privé-account Ron78NL): https://ron78nl.github.io/EA-Cateringv2/
 
 ## Video's toevoegen of wijzigen
 
