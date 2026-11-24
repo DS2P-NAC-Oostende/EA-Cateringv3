@@ -38,11 +38,23 @@ def bestanden():
     return uit
 
 
+META = re.compile(r'(<meta name="versie" content=")[^"]*(">)')
+
+
 def vingerafdruk(paden):
+    """Vingerafdruk van alle appbestanden.
+
+    De versieregel in index.html wordt eerst weggepoetst. Anders zou elke
+    robotronde een andere vingerafdruk geven, omdat de robot die regel zelf
+    net heeft aangepast, en dan zou hij blijven doordraaien.
+    """
     h = hashlib.sha256()
     for p in paden:
         h.update(p.relative_to(HIER).as_posix().encode())
-        h.update(p.read_bytes())
+        inhoud = p.read_bytes()
+        if p.name == "index.html":
+            inhoud = META.sub(r"\g<1>\g<2>", inhoud.decode("utf-8")).encode("utf-8")
+        h.update(inhoud)
     return h.hexdigest()[:7]
 
 
@@ -70,6 +82,18 @@ def main():
 
     if nieuw != tekst:
         sw.write_text(nieuw, encoding="utf-8")
+
+    # De pagina moet zelf weten welke versie hij is: daarmee kan de app
+    # merken dat hij achterloopt, ook als de service worker blijft hangen
+    # (dat gebeurt op iPhones).
+    index = HIER / "index.html"
+    if index.exists():
+        tekst = index.read_text(encoding="utf-8")
+        gestempeld, aantal = META.subn(rf'\g<1>{versie}\g<2>', tekst, count=1)
+        if aantal != 1:
+            raise SystemExit('De regel \'<meta name="versie" content="...">\' staat niet in index.html.')
+        if gestempeld != tekst:
+            index.write_text(gestempeld, encoding="utf-8")
 
     (HIER / "versie.json").write_text(json.dumps({
         "versie": versie,
