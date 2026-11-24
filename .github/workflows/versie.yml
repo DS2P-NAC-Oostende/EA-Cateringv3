@@ -36,7 +36,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "Versierobot"
             git config user.email "actions@github.com"
-            git add sw.js versie.json
+            git add sw.js versie.json index.html
             git commit -m "Versie bijgewerkt [robot]"
             git push
             echo "Nieuw versienummer vastgelegd."
