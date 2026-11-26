@@ -223,3 +223,24 @@ details[open].rc-paneel summary::after { transform: rotate(-135deg); }
     #receptenView.rc-recept-open .rc-recept { margin-top: 1rem; }
     #receptenView.rc-groep-open #rcHero { padding-top: .8rem; }
 }
+
+/* =============================================================
+   Smalle telefoons (tot 400 punten breed)
+   -------------------------------------------------------------
+   Instructievideo's + Recepten + de toolsknop waren samen breder
+   dan het scherm, waardoor de toolsknop half buiten beeld viel.
+   Een maatje kleiner en het past met ruimte over.
+   ============================================================= */
+@media (max-width: 400px) {
+    .weergave { gap: .25rem; margin-top: .55rem; }
+    .weergave-btn {
+        min-height: 2.35rem; padding: 0 .5rem; gap: .3rem;
+        font-size: .8rem; letter-spacing: 0;
+    }
+    .weergave-btn svg { width: .95rem; height: .95rem; }
+}
+
+/* Heel smalle toestellen (oude iPhone SE en dergelijke) */
+@media (max-width: 345px) {
+    .weergave-btn { padding: 0 .4rem; font-size: .76rem; }
+}

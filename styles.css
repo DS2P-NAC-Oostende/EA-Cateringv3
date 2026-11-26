@@ -295,3 +295,28 @@ footer {
 .embed .container { margin-top: -2.25rem; }
 .embed footer { margin-top: 2rem; padding: 1rem; }
 .embed .footer-logo { display: none; }
+
+/* =============================================================
+   Smalle telefoons (tot 400 punten breed, zoals een Galaxy S24)
+   -------------------------------------------------------------
+   Op die breedte paste logo + titel + taalknoppen net niet op één
+   regel, waardoor de taalknoppen eronder sprongen en de kopbalk
+   onnodig hoog werd. Alles hier een maatje kleiner, dan past het
+   wel en oogt de app rustiger.
+   ============================================================= */
+@media (max-width: 400px) {
+    .merk-logo { width: 2.75rem; height: 2.75rem; }
+    .merk { gap: .55rem; }
+    .merk h1 { font-size: 1.3rem; }
+    .hero-top { gap: .5rem; }
+    .lang-switch { gap: .2rem; }
+    .lang-btn { min-width: 2.2rem; min-height: 2.1rem; font-size: .7rem; padding: 0 .3rem; }
+    .kop-balk { padding-bottom: .65rem; }
+}
+
+/* Heel smalle toestellen: titel nog een maatje kleiner, dan blijven
+   de taalknoppen ook daar naast de titel staan. */
+@media (max-width: 345px) {
+    .merk h1 { font-size: 1.15rem; }
+    .merk-logo { width: 2.5rem; height: 2.5rem; }
+}

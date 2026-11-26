@@ -83,6 +83,14 @@
     .tools-menu { left: 0; right: 0; min-width: 0; }
 }
 
+/* ---------- Smalle telefoons (tot 400 punten) ---------- */
+/* Alleen het pictogram: het pijltje kost ruimte die er niet is. */
+@media (max-width: 400px) {
+    .tools-knop { min-height: 2.35rem; padding: 0 .6rem; gap: 0; }
+    .tools-knop svg { width: 1rem; height: 1rem; }
+    .tools-pijl { display: none; }
+}
+
 /* Afdrukken: menu en knop horen niet op papier */
 @media print {
     .tools-knop, .tools-menu { display: none !important; }
