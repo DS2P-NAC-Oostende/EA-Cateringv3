@@ -77,12 +77,24 @@
 
     async function haal(url) {
         const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 8000);
+        const timer = setTimeout(() => ctrl.abort(), 12000);
         try {
-            const r = await fetch(url, { signal: ctrl.signal, cache: "no-store" });
+            // Eigen tijdstempel achter het adres. Google bewaart van elk adres een
+            // kopie en geeft die soms dagenlang terug, ook als de Sheet al bij is.
+            // Een adres dat elke keer anders is, dwingt een verse kopie af.
+            const r = await fetch(url + "&_=" + Date.now(), { signal: ctrl.signal, cache: "no-store" });
             if (!r.ok) throw new Error("HTTP " + r.status);
             return await r.text();
         } finally { clearTimeout(timer); }
+    }
+
+    // Eén herkansing: op mobiel internet mislukt de eerste poging geregeld.
+    async function haalTwee(url) {
+        try { return await haal(url); }
+        catch (e) {
+            await new Promise((ok) => setTimeout(ok, 1200));
+            return await haal(url);
+        }
     }
 
     function laadScript(src) {
@@ -95,16 +107,22 @@
 
     async function start() {
         let lijst = null;
+        let bron = "terugval";
         if (BRON.videos && BRON.categorieen) {
             try {
-                const [cat, vid] = await Promise.all([haal(BRON.categorieen), haal(BRON.videos)]);
+                const [cat, vid] = await Promise.all([haalTwee(BRON.categorieen), haalTwee(BRON.videos)]);
                 lijst = bouwLijsten(leesCsv(cat), leesCsv(vid));
+                lijst.tijd = Date.now();
+                bron = "sheet";
                 try { localStorage.setItem(CACHE_SLEUTEL, JSON.stringify(lijst)); } catch (e) {}
             } catch (e) {
                 console.warn("Google Sheet niet bereikbaar, laatst bewaarde lijst wordt gebruikt.", e);
                 try { lijst = JSON.parse(localStorage.getItem(CACHE_SLEUTEL)); } catch (e2) { lijst = null; }
+                if (lijst) bron = "bewaard";
             }
         }
+        // Waar de lijst vandaan komt, zodat de voettekst het kan laten zien.
+        window.EAC_LIJST = { bron: lijst ? bron : "terugval", tijd: (lijst && lijst.tijd) || null };
         if (lijst) {
             window.categorieen = lijst.categorieen;
             window.videos = lijst.videos;

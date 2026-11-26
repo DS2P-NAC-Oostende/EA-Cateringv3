@@ -16,7 +16,7 @@
 // telefoon zichzelf. Dat is de garantie.
 // =============================================================
 
-const VERSIE = "2026-11-26-1349-39bff6b";            // ROBOT-VERSIE (niet met de hand wijzigen)
+const VERSIE = "2026-11-26-1317-46aefd8";            // ROBOT-VERSIE (niet met de hand wijzigen)
 const PREFIX = "eac-v3-";          // eigen opslag: alle apps op dit adres delen één opslag
 const CACHE = PREFIX + VERSIE;
 
@@ -28,6 +28,7 @@ const BESTANDEN = [
     "./recepten-data.js", "./videos.js",
     "./bestellijst.css", "./bestellijst.js", "./producten.js", "./bestellijst.html",
     "./omrekenen.css", "./omrekenen.js",
+    "./tools.css", "./tools.js",
     "./nac-logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png",
     "./qr.html", "./qrcode.js",
     "./manifest.json", "./versie.json"

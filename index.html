@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="tools.css">
     <link rel="stylesheet" href="omrekenen.css">
     <!-- Welke versie deze pagina is. De robot Versie vult dit. -->
-    <meta name="versie" content="2026-11-26-1349-39bff6b">
+    <meta name="versie" content="2026-11-26-1023-fbff62d">
     <meta name="theme-color" content="#0b1530">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="EA Catering">
@@ -140,10 +140,28 @@
     const draaiend = meta ? meta.content : "";
 
     // ---------- Versie onderaan tonen ----------
+    let laatsteVersie = null;
     function toonVersie(v) {
+        if (v) laatsteVersie = v;
         const regel = document.getElementById("versieRegel");
-        if (regel && v && v.datum) regel.textContent = "Versie van " + v.datum;
+        if (!regel) return;
+        let tekst = laatsteVersie && laatsteVersie.datum ? "Versie van " + laatsteVersie.datum : "";
+        // De videolijst komt uit de Google Sheet. Lukt dat niet, dan draait de app
+        // op een oudere kopie; dat moet zichtbaar zijn, anders lijkt het of de
+        // app niet bijwerkt terwijl er alleen geen verbinding met Google was.
+        const L = window.EAC_LIJST;
+        if (L && L.bron !== "sheet") {
+            let melding = "videolijst uit noodkopie";
+            if (L.bron === "bewaard" && L.tijd) {
+                const d = new Date(L.tijd);
+                melding = "videolijst van " + d.getDate() + "-" + (d.getMonth() + 1);
+            }
+            tekst += (tekst ? " \u00b7 " : "") + melding + " (Google niet bereikbaar)";
+        }
+        regel.textContent = tekst;
     }
+    // data.js meldt zich als de lijst klaar is; dan pas weten we waar hij vandaan kwam.
+    document.addEventListener("eac-klaar", () => toonVersie(null));
 
     // ---------- Berichtje na het bijwerken ----------
     function meldBijgewerkt() {
