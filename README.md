@@ -36,6 +36,18 @@ Directe links (ook met `&embed=1` voor BeLADL):
 - `?recept=<id>` opent meteen één recept (knop "Link kopiëren" bij een recept)
 - `?techniek=<YouTube-id>` toont alle recepten met die techniek
 
+## Omrekenen
+
+Rechtsboven in de kopbalk staat de knop **Omrekenen** (op een telefoon alleen het pictogram). Die opent een paneel met drie onderdelen:
+
+- **Maten**: gram, kilo, ounce, pound, milliliter tot liter, eetlepel (15 ml), theelepel (5 ml), cup (240 ml), tablespoon/teaspoon US, fluid ounce, pint en quart. Alle uitkomsten staan tegelijk in beeld; lepels en cups in kwarten (1 ½, ¾).
+- **Temperatuur**: °C, °F, thermostaat (BE/FR) en gas mark (UK).
+- **Porties**: recept voor X personen omrekenen naar Y personen, met de factor en een hoeveelheid uit het recept.
+
+Van inhoud naar gewicht kan alleen met een **product** erbij: een cup bloem weegt 125 gram, een cup honing 340 gram. De dichtheden (gram per milliliter) staan bovenin `omrekenen.js` in de lijst `PRODUCTEN`; een product toevoegen is één regel met de naam in NL/FR/EN en de dichtheid. Het zijn richtwaarden voor losgeschepte producten — afwegen blijft nauwkeuriger, en daar verwijst de gouden knop onder in het paneel ook naar.
+
+Met `?omrekenen=1` in het adres gaat het paneel meteen open.
+
 ## Bestanden
 
 - `index.html`, `styles.css`: de pagina en het ontwerp
@@ -44,6 +56,7 @@ Directe links (ook met `&embed=1` voor BeLADL):
 - `favorieten.js`: favorieten en bekeken-vinkjes
 - `recepten.js`, `recepten.css`: het tabblad Recepten (zoeken, hoofdgroepen, receptweergave, koppeling met de video's)
 - `recepten-data.js`: alle recepten; wordt pas geladen als iemand het tabblad opent (gegenereerd, niet met de hand bewerken)
+- `omrekenen.js`, `omrekenen.css`: het omrekenpaneel (maten, temperatuur, porties)
 - `videos.js`: reservelijst als de Sheet niet bereikbaar is
 - `sw.js`, `manifest.json`: installeren als app op de telefoon
 - `qr.html`, `qrcode.js`: printbare QR-codes per video en categorie (qrcode.js: MIT-licentie, Kazuhiko Arase)
