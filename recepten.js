@@ -126,16 +126,12 @@
     const view = document.getElementById("receptenView");
     const tabVideos = document.getElementById("tabVideos");
     const tabRecepten = document.getElementById("tabRecepten");
-    // Derde tabblad. Staat het niet in de pagina of is het niet vrijgegeven,
-    // dan slaat alles wat hieronder met de bestellijst te maken heeft over.
-    const tabBestellijst = window.BESTELLIJST_ZICHTBAAR ? document.getElementById("tabBestellijst") : null;
+    // De bestellijst heeft geen eigen tabknop meer: hij zit in het
+    // tools-menu (tools.js). Het SCHERM bestaat nog wel, en dat openen we
+    // hieronder via openTab. Of hij beschikbaar is bepaalt de schakelaar
+    // VRIJGEGEVEN in bestellijst.js.
+    const blBeschikbaar = !!window.BESTELLIJST_ZICHTBAAR;
     const blView = document.getElementById("bestellijstView");
-    if (tabBestellijst) {
-        tabBestellijst.hidden = false;
-        // Drie knoppen passen anders niet op een telefoonscherm (zie bestellijst.css)
-        const balk = document.querySelector(".weergave");
-        if (balk) balk.classList.add("drie-tabs");
-    }
 
     // ---------- Video's: titel in de gekozen taal, uit de live videolijst ----------
     function videoVan(id) {
@@ -377,7 +373,7 @@
                     <ol class="rc-stappen">${stappen}</ol>
                     ${r.tips ? `<div class="rc-kader"><b>${esc(T().tip)}</b>${r.tips.map(t => esc(t.charAt(0).toUpperCase() + t.slice(1))).join("<br>")}</div>` : ""}
                     <div class="rc-kader"><b>${esc(T().aandacht)}</b>${esc(r.note)}</div>
-                    <div class="rc-acties"><button type="button" class="rc-knop" id="rcPrint">${esc(T().print)}</button><button type="button" class="rc-knop rc-licht" id="rcDeel">${esc(T().deel)}</button>${tabBestellijst ? `<button type="button" class="rc-knop bl-opknop" id="rcOpLijst">${esc(T().opBestellijst)}</button>` : ""}</div>
+                    <div class="rc-acties"><button type="button" class="rc-knop" id="rcPrint">${esc(T().print)}</button><button type="button" class="rc-knop rc-licht" id="rcDeel">${esc(T().deel)}</button>${blBeschikbaar ? `<button type="button" class="rc-knop bl-opknop" id="rcOpLijst">${esc(T().opBestellijst)}</button>` : ""}</div>
                 </section>
             </div>`;
         const wasDicht = el.hidden;
@@ -486,7 +482,7 @@
     }
 
     function openTab(naam, opties) {
-        if (naam === "bestellijst" && !tabBestellijst) naam = "videos";      // niet vrijgegeven
+        if (naam === "bestellijst" && !blBeschikbaar) naam = "videos";      // niet vrijgegeven
         tab = (naam === "recepten" || naam === "bestellijst") ? naam : "videos";
         const rc = tab === "recepten";
         const bl = tab === "bestellijst";
@@ -496,7 +492,6 @@
         if (blView) blView.hidden = !bl;
         tabVideos.setAttribute("aria-selected", tab === "videos");
         tabRecepten.setAttribute("aria-selected", rc);
-        if (tabBestellijst) tabBestellijst.setAttribute("aria-selected", bl);
 
         if (bl) {
             // De bestellijst gebruikt dezelfde receptendata als het tabblad
@@ -535,21 +530,18 @@
 
     tabVideos.addEventListener("click", () => openTab("videos"));
     tabRecepten.addEventListener("click", () => openTab("recepten"));
-    if (tabBestellijst) {
-        tabBestellijst.addEventListener("click", () => openTab("bestellijst"));
-        // Tellertje op de tabknop en de knop onder het recept bijwerken
-        const teller = document.createElement("span");
-        teller.className = "bl-teller";
-        teller.hidden = true;
-        tabBestellijst.appendChild(teller);
+    if (blBeschikbaar && window.BESTELLIJST) {
+        // Verandert de lijst, dan de knop onder het recept bijwerken en het
+        // tools-menu laten hertekenen (daar staat het tellertje nu).
         window.BESTELLIJST.bijWijziging = function () {
-            const n = window.BESTELLIJST.aantal();
-            teller.hidden = n === 0;
-            teller.textContent = n;
             zetOpLijstKnop();
+            if (window.TOOLS && typeof window.TOOLS.herteken === "function") window.TOOLS.herteken();
         };
         window.BESTELLIJST.bijWijziging();
     }
+
+    // Het tools-menu opent het bestellijstscherm hiermee.
+    window.EAC_OPEN_TAB = openTab;
 
     // Knop onder een recept: tekst en teller laten kloppen
     function zetOpLijstKnop() {
@@ -585,7 +577,7 @@
     function vertaalTabs() {
         document.querySelectorAll(".weergave [data-rc]").forEach(el => { el.textContent = T()[el.dataset.rc]; });
         document.querySelector(".weergave").setAttribute("aria-label",
-            T().tabVideos + " / " + T().tabRecepten + (tabBestellijst ? " / " + T().tabBestellijst : ""));
+            T().tabVideos + " / " + T().tabRecepten);
         zetOpLijstKnop();
     }
     document.querySelectorAll(".lang-btn").forEach(b => b.addEventListener("click", () => {
@@ -600,7 +592,7 @@
     // ---------- Directe links ----------
     const p = new URLSearchParams(location.search);
     const recept = p.get("recept"), tech = p.get("techniek");
-    if (p.get("tab") === "bestellijst" && tabBestellijst) openTab("bestellijst");
+    if (p.get("tab") === "bestellijst" && blBeschikbaar) openTab("bestellijst");
     else if (p.get("tab") === "recepten" || recept || tech) openTab("recepten", { recept: recept || undefined, techniek: tech || undefined, naarRecept: true });
     // ?v=... (QR-code): app.js opende de video al vóór dit bestand; zet de receptenlink alsnog.
     const vid = p.get("v");

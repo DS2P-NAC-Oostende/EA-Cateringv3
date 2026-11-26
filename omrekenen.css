@@ -10,29 +10,17 @@
 /* ---------- Kopbalk: alles op één regel houden ---------- */
 /* Zonder dit springt de knop op een telefoon naar een eigen regel: de rij
    logo + taalknoppen + knop is dan net te breed. De titel mag krimpen. */
-.hero-top { flex-wrap: nowrap; }
-.hero-top .merk { min-width: 0; }
-.hero-top .merk h1 { overflow-wrap: normal; word-break: keep-all; }
+/* (De kopbalk hoefde hier iets op te schuiven toen de omrekenknop nog
+   naast de taalknoppen stond. Die knop zit nu in het tools-menu, dus
+   de kopbalk is weer zoals hij was.) */
 
-/* ---------- Knop in de kopbalk ---------- */
-.om-knop {
-    flex: none;
-    display: inline-flex; align-items: center; gap: .4rem;
-    min-height: 2.25rem; padding: 0 .75rem;
-    background: transparent; color: #d0dbe7; cursor: pointer;
-    border: 1px solid rgba(197, 160, 89, .45); border-radius: 999px;
-    font-size: .8rem; font-weight: 600; letter-spacing: .04em;
-    transition: background var(--snel), color var(--snel), border-color var(--snel);
-}
-.om-knop svg { width: 1.05rem; height: 1.05rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.om-knop:hover { color: #fff; border-color: var(--goud); }
-.om-knop:focus-visible { outline: 2px solid var(--goud-licht); outline-offset: 2px; }
-.om-knop[aria-expanded="true"] { background: var(--goud); color: var(--navy-950); border-color: var(--goud); }
-
-/* Op een telefoon alleen het pictogram: de taalknoppen moeten ernaast passen. */
-@media (max-width: 760px) {
-    .om-knop { padding: 0; width: 2.4rem; min-width: 2.4rem; justify-content: center; }
-    .om-knop span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+/* ---------- Tussenkopje in de uitkomst ---------- */
+/* Scheidt de omrekening die altijd klopt van die op basis van water. */
+.om-tussenkop {
+    margin: .7rem 0 .15rem; padding-top: .55rem;
+    border-top: 1px solid var(--lijn, rgba(11,21,48,.12));
+    font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--goud-tekst, #8a6d2f);
 }
 
 /* ---------- Scherm eroverheen ---------- */
@@ -139,7 +127,7 @@
 .om-video svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
 
 /* Afdrukken: het paneel hoort niet op papier. */
-@media print { .om-overlay, .om-knop { display: none !important; } }
+@media print { .om-overlay { display: none !important; } }
 
 @media (prefers-reduced-motion: reduce) {
     .om-overlay, .om-paneel { transition: none; }

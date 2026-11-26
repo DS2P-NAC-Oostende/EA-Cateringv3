@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="recepten.css">
     <link rel="stylesheet" href="bestellijst.css">
+    <link rel="stylesheet" href="tools.css">
     <link rel="stylesheet" href="omrekenen.css">
     <!-- Welke versie deze pagina is. De robot Versie vult dit. -->
     <meta name="versie" content="2026-11-26-1023-fbff62d">
@@ -61,9 +62,6 @@
         </button>
         <button type="button" class="weergave-btn" role="tab" id="tabRecepten" aria-selected="false" aria-controls="receptenView">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6M9 12h4"/></svg><span data-rc="tabRecepten">Recepten</span>
-        </button>
-        <button type="button" class="weergave-btn" role="tab" id="tabBestellijst" aria-selected="false" aria-controls="bestellijstView" hidden>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14l-1.2 13.2A2 2 0 0 1 15.8 19H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8h6M9 12h6"/></svg><span data-rc="tabBestellijst">Bestellijst</span>
         </button>
     </div>
 </header>
@@ -115,8 +113,10 @@
 <!-- producten.js en bestellijst.js zijn klein; de zware receptendata laadt pas bij openen -->
 <script src="producten.js"></script>
 <script src="bestellijst.js"></script>
+<!-- tools.js maakt de tools-knop in de tabbladenbalk; de tools melden zich daar zelf aan -->
+<script src="tools.js"></script>
 <script src="data.js"></script>
-<!-- omrekenen.js hangt zichzelf in de kopbalk; het raakt de video's en recepten niet aan -->
+<!-- omrekenen.js meldt zich aan bij het tools-menu; het raakt de video's en recepten niet aan -->
 <script src="omrekenen.js"></script>
 <script>
 // =============================================================

@@ -1,0 +1,89 @@
+/* =============================================================
+   Tools-menu - EA Catering v3
+   -------------------------------------------------------------
+   Eén knopje rechts in de tabbladenbalk, met een uitklaplijstje
+   eronder. De kleuren volgen de tabbladen uit recepten.css, zodat
+   het er bijhoort en niet als iets nieuws uitziet.
+   ============================================================= */
+
+.weergave { position: relative; }      /* nodig: het menu hangt hieronder */
+
+/* ---------- De knop ---------- */
+.tools-knop {
+    display: inline-flex; align-items: center; gap: .45rem;
+    flex: 0 0 auto; margin-left: auto;
+    min-height: 2.6rem; padding: 0 .9rem; cursor: pointer;
+    background: transparent; color: #c9d6e8;
+    border: 1px solid rgba(197,160,89,.45); border-radius: 999px;
+    font-size: .92rem; font-weight: 600; letter-spacing: .02em;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.tools-knop svg {
+    width: 1.1rem; height: 1.1rem; flex: 0 0 auto;
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+.tools-knop:hover { color: #fff; border-color: var(--goud); }
+.tools-knop:focus-visible { outline: 2px solid var(--goud); outline-offset: 2px; }
+.tools-knop.aan { background: var(--goud); border-color: var(--goud); color: var(--navy-950); }
+
+/* Pijltje dat meedraait als het menu openstaat */
+.tools-pijl {
+    width: .4rem; height: .4rem; flex: 0 0 auto; margin-left: .05rem;
+    border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+    transform: rotate(45deg) translateY(-.08rem);
+    transition: transform .18s ease;
+}
+.tools-knop.aan .tools-pijl { transform: rotate(225deg) translateY(-.08rem); }
+
+/* ---------- Het menu ---------- */
+.tools-menu {
+    position: absolute; top: calc(100% + .45rem); right: 0; z-index: 40;
+    min-width: 13rem; padding: .35rem;
+    background: var(--kaart, #fff);
+    border: 1px solid var(--lijn, rgba(11,21,48,.12));
+    border-radius: .7rem;
+    box-shadow: 0 .75rem 2rem rgba(11,21,48,.28);
+}
+.tools-menu[hidden] { display: none; }
+
+.tools-item {
+    display: flex; align-items: center; gap: .65rem; width: 100%;
+    padding: .6rem .7rem; cursor: pointer;
+    background: none; border: 0; border-radius: .5rem;
+    text-align: left; color: var(--tekst, #0b1530);
+    font-size: .94rem; font-weight: 500; font-family: inherit;
+}
+.tools-item svg {
+    width: 1.15rem; height: 1.15rem; flex: 0 0 auto;
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    stroke-linecap: round; stroke-linejoin: round;
+    color: var(--navy-800, #15275a);
+}
+.tools-item > span { flex: 1 1 auto; }
+.tools-item:hover { background: #eef1f7; }
+.tools-item:focus-visible { outline: 2px solid var(--navy-700, #1d3473); outline-offset: -2px; }
+
+/* Tellertje, bijvoorbeeld hoeveel recepten op de bestellijst staan */
+.tools-merk {
+    flex: 0 0 auto; display: inline-grid; place-items: center;
+    min-width: 1.3rem; height: 1.3rem; padding: 0 .35rem;
+    border-radius: 999px; background: var(--goud, #c5a059); color: var(--navy-950, #060c1f);
+    font-size: .74rem; font-weight: 700;
+}
+
+.tools-leeg { padding: .7rem; color: var(--tekst-zacht, #5b6882); font-size: .88rem; }
+
+/* ---------- Smal scherm ---------- */
+@media (max-width: 760px) {
+    /* De twee tabbladen vullen de breedte (flex: 1 in recepten.css); de
+       toolsknop houdt zijn eigen maat en wordt alleen het icoon. */
+    .tools-knop { padding: 0 .75rem; }
+    .tools-label { display: none; }
+    .tools-menu { left: 0; right: 0; min-width: 0; }
+}
+
+/* Afdrukken: menu en knop horen niet op papier */
+@media print {
+    .tools-knop, .tools-menu { display: none !important; }
+}
