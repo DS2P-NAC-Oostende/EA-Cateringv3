@@ -1,0 +1,146 @@
+/* =============================================================
+   Omrekenen — EA Catering V3
+   -------------------------------------------------------------
+   LEERMODUS: dit bestand regelt alleen het uiterlijk van het
+   omrekenpaneel. De kleuren en lettertypes komen uit styles.css
+   (de variabelen --navy-950, --goud, enzovoort), zodat het paneel
+   automatisch meegaat als de huisstijl daar ooit wijzigt.
+   ============================================================= */
+
+/* ---------- Kopbalk: alles op één regel houden ---------- */
+/* Zonder dit springt de knop op een telefoon naar een eigen regel: de rij
+   logo + taalknoppen + knop is dan net te breed. De titel mag krimpen. */
+.hero-top { flex-wrap: nowrap; }
+.hero-top .merk { min-width: 0; }
+.hero-top .merk h1 { overflow-wrap: normal; word-break: keep-all; }
+
+/* ---------- Knop in de kopbalk ---------- */
+.om-knop {
+    flex: none;
+    display: inline-flex; align-items: center; gap: .4rem;
+    min-height: 2.25rem; padding: 0 .75rem;
+    background: transparent; color: #d0dbe7; cursor: pointer;
+    border: 1px solid rgba(197, 160, 89, .45); border-radius: 999px;
+    font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+    transition: background var(--snel), color var(--snel), border-color var(--snel);
+}
+.om-knop svg { width: 1.05rem; height: 1.05rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.om-knop:hover { color: #fff; border-color: var(--goud); }
+.om-knop:focus-visible { outline: 2px solid var(--goud-licht); outline-offset: 2px; }
+.om-knop[aria-expanded="true"] { background: var(--goud); color: var(--navy-950); border-color: var(--goud); }
+
+/* Op een telefoon alleen het pictogram: de taalknoppen moeten ernaast passen. */
+@media (max-width: 760px) {
+    .om-knop { padding: 0; width: 2.4rem; min-width: 2.4rem; justify-content: center; }
+    .om-knop span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}
+
+/* ---------- Scherm eroverheen ---------- */
+.om-overlay {
+    position: fixed; inset: 0; z-index: 70;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.5rem;
+    background: rgba(11, 21, 48, .55);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--snel);
+}
+.om-overlay.open { opacity: 1; pointer-events: auto; }
+
+.om-paneel {
+    width: 100%; max-width: 32rem; max-height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--kaart); color: var(--tekst);
+    border-radius: 16px; box-shadow: var(--schaduw-hover);
+    overflow: hidden;
+    transform: translateY(.75rem) scale(.99);
+    transition: transform var(--snel);
+}
+.om-overlay.open .om-paneel { transform: none; }
+
+/* Op een telefoon van onderaf: binnen handbereik, net als het afspeelscherm. */
+@media (max-width: 640px) {
+    .om-overlay { padding: 0; align-items: flex-end; }
+    .om-paneel { max-width: none; border-radius: 16px 16px 0 0; max-height: 92vh; }
+}
+
+/* ---------- Kop ---------- */
+.om-kop {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .9rem 1rem .9rem 1.25rem;
+    background: linear-gradient(160deg, var(--navy-950), var(--navy-800));
+    color: #fff;
+}
+.om-kop h2 { font-family: var(--kop-font); font-size: 1.15rem; font-weight: 600; margin-right: auto; }
+.om-sluit {
+    flex: none; width: 2.25rem; height: 2.25rem;
+    display: grid; place-items: center; cursor: pointer;
+    background: transparent; color: #d0dbe7;
+    border: 1px solid rgba(197, 160, 89, .4); border-radius: 50%;
+}
+.om-sluit svg { width: 1.1rem; height: 1.1rem; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.om-sluit:hover { color: #fff; border-color: var(--goud); }
+
+/* ---------- Keuze tussen de drie onderdelen ---------- */
+.om-schakel { display: flex; gap: .3rem; padding: .75rem 1rem 0; }
+.om-schakel button {
+    flex: 1; min-height: 2.3rem; padding: 0 .4rem; cursor: pointer;
+    background: var(--papier); color: var(--tekst-zacht);
+    border: 1px solid var(--lijn); border-radius: 999px;
+    font-size: .82rem; font-weight: 600;
+}
+.om-schakel button[aria-selected="true"] {
+    background: var(--navy-900); color: #fff; border-color: var(--navy-900);
+}
+
+/* ---------- Inhoud ---------- */
+.om-blok { padding: 1rem 1.25rem 1.25rem; overflow-y: auto; }
+.om-veldrij { display: flex; gap: .5rem; align-items: stretch; }
+.om-veldrij + .om-veldrij { margin-top: .6rem; }
+.om-label { display: block; font-size: .78rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--tekst-zacht); margin-bottom: .3rem; }
+
+.om-getal, .om-keuze {
+    width: 100%; min-height: 3rem; padding: 0 .75rem;
+    background: var(--papier); color: var(--tekst);
+    border: 1px solid var(--lijn); border-radius: 10px;
+}
+.om-getal { font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.om-getal:focus, .om-keuze:focus { outline: 2px solid var(--goud); outline-offset: 1px; border-color: var(--goud); }
+.om-getal::-webkit-outer-spin-button, .om-getal::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.om-getal { -moz-appearance: textfield; }
+.om-smal { flex: 0 0 8.5rem; }
+.om-breed { flex: 1 1 auto; min-width: 0; }
+
+/* ---------- Uitkomsten ---------- */
+.om-uitkomst { margin-top: 1rem; border-top: 1px solid var(--lijn); }
+.om-regel {
+    display: flex; align-items: baseline; gap: .6rem;
+    padding: .55rem 0; border-bottom: 1px solid var(--lijn);
+}
+.om-regel-naam { flex: 1 1 auto; font-size: .92rem; color: var(--tekst-zacht); }
+.om-regel-waarde { font-size: 1.1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.om-regel.om-hoofd { background: rgba(197, 160, 89, .1); margin: 0 -1.25rem; padding: .6rem 1.25rem; }
+.om-regel.om-hoofd .om-regel-naam { color: var(--goud-tekst); font-weight: 600; }
+.om-regel.om-hoofd .om-regel-waarde { font-size: 1.3rem; }
+
+.om-noot { margin-top: .9rem; font-size: .8rem; line-height: 1.5; color: var(--tekst-zacht); }
+.om-noot b { color: var(--tekst); font-weight: 600; }
+.om-vraag { margin-top: 1rem; padding: .8rem .9rem; background: var(--papier); border: 1px dashed var(--lijn); border-radius: 10px; font-size: .88rem; color: var(--tekst-zacht); }
+
+/* Gouden knop naar de instructievideo, zelfde vorm als bij de recepten. */
+.om-video {
+    margin-top: .9rem; width: 100%;
+    display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+    min-height: 2.75rem; padding: 0 1rem; cursor: pointer;
+    background: var(--goud); color: var(--navy-950);
+    border: 1px solid var(--goud); border-radius: 999px;
+    font-size: .9rem; font-weight: 600;
+}
+.om-video:hover { background: var(--goud-licht); }
+.om-video svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
+
+/* Afdrukken: het paneel hoort niet op papier. */
+@media print { .om-overlay, .om-knop { display: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .om-overlay, .om-paneel { transition: none; }
+}
