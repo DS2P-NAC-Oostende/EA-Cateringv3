@@ -26,6 +26,7 @@ html = html.replace('<html lang="nl">', '<html lang="nl" class="embed">', 1)
 # Stijlen inline
 html = re.sub(r'<link rel="stylesheet" href="styles\.css[^"]*">', lambda m: "<style>\n" + lees("styles.css") + "\n</style>", html)
 html = re.sub(r'<link rel="stylesheet" href="recepten\.css[^"]*">', lambda m: "<style>\n" + lees("recepten.css") + "\n</style>", html)
+html = re.sub(r'<link rel="stylesheet" href="omrekenen\.css[^"]*">', lambda m: "<style>\n" + lees("omrekenen.css") + "\n</style>", html)
 # Geen installeerbare app in BeLADL
 html = re.sub(r'\s*<link rel="(manifest|apple-touch-icon|icon)"[^>]*>', "", html)
 html = re.sub(r'\s*<meta name="apple-mobile-web-app-[^>]*>', "", html)
@@ -45,7 +46,11 @@ assert "data-bron" in data, "data.js is veranderd: pas maak_beladl.py aan"
 extra = ('<script>window.EAC_DEEL_BASIS = "https://ds2p-nac-oostende.github.io/EA-Cateringv3/";</script>\n'
          f'<script>\n{veilig(lees("recepten-data.js"))}\n</script>\n' + klaar)
 html = re.sub(r'<script src="data\.js[^"]*"></script>', lambda m: extra + f"<script>\n{veilig(data)}\n</script>", html)
+# Het omrekenpaneel hangt zichzelf in de kopbalk; hier ook inline, anders
+# ontbreekt de knop in BeLADL (losse bestanden kunnen daar niet geladen worden).
+html = re.sub(r'<script src="omrekenen\.js[^"]*"></script>', lambda m: f"<script>\n{veilig(lees('omrekenen.js'))}\n</script>", html)
 assert "<script src=\"data.js" not in html and "href=\"styles.css" not in html
+assert "<script src=\"omrekenen.js" not in html and "href=\"omrekenen.css" not in html
 
 uit = MAP / "EA_Catering_BeLADL.html"
 if len(sys.argv) > 2: uit = pathlib.Path(sys.argv[2])
