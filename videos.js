@@ -94,3 +94,15 @@ const videos = [
   { id: "_ILm2zaaYYc", titel: "Instructie Roux bereiden", fr: "Préparer un roux", en: "Making a roux", categorie: "sauzen" },
   { id: "akdxLdKjL2U", titel: "Instructie Koffiepercolator", fr: "Percolateur à café", en: "Coffee percolator", categorie: "keukenapparatuur" },
 ];  
+
+// =============================================================
+// Deze lijst ook buiten dit bestand beschikbaar maken.
+// LEERMODUS - waarom dit nodig is:
+// 'const videos' bovenaan blijft binnen dit bestand; andere bestanden
+// zien hem wel via de scope (app.js), maar recepten.js en omrekenen.js
+// kijken naar window.videos. Zonder deze twee regels werkt de koppeling
+// van zoekwoorden aan recepten niet zodra de Google Sheet onbereikbaar is
+// en de app op deze reservelijst terugvalt.
+// =============================================================
+window.videos = videos;
+window.categorieen = categorieen;

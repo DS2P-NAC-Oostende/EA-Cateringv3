@@ -29,6 +29,7 @@ const BESTANDEN = [
     "./bestellijst.css", "./bestellijst.js", "./producten.js", "./bestellijst.html",
     "./omrekenen.css", "./omrekenen.js",
     "./nac-logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png",
+    "./qr.html", "./qrcode.js",
     "./manifest.json", "./versie.json"
 ];
 
