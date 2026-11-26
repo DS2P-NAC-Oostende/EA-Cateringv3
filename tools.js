@@ -68,8 +68,10 @@
     knop.setAttribute("aria-expanded", "false");
     knop.innerHTML =
         '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-        '<path d="M14.7 6.3a4 4 0 0 1 5 5l-9.2 9.2a2.1 2.1 0 0 1-3-3z"/>' +
-        '<path d="M9.5 4.5 7 3 4 6l1.5 2.5M5.5 11 3 12l1 4 3 .5"/>' +
+        '<rect x="4" y="4" width="7.5" height="7.5" rx="1.6"/>' +
+        '<rect x="12.5" y="4" width="7.5" height="7.5" rx="1.6"/>' +
+        '<rect x="4" y="12.5" width="7.5" height="7.5" rx="1.6"/>' +
+        '<rect x="12.5" y="12.5" width="7.5" height="7.5" rx="1.6"/>' +
         '</svg><span class="tools-label"></span><span class="tools-pijl" aria-hidden="true"></span>';
     balk.appendChild(knop);
 
