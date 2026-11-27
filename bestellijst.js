@@ -24,7 +24,7 @@
     //         Jij bereikt het dan met  ...?bestellijst=1  achter het adres.
     // true  = het tabblad staat gewoon in de kopbalk, voor iedereen.
     // Verander alleen dit ene woord als je hem vrijgeeft.
-    const VRIJGEGEVEN = true;
+    const VRIJGEGEVEN = false;
     // =========================================================
     window.BESTELLIJST_ZICHTBAAR = VRIJGEGEVEN ||
         new URLSearchParams(location.search).has("bestellijst") ||
@@ -547,14 +547,6 @@
         const tel = (g) => ALLE.filter((r) => r.group === g).length;
         $("blGroep").innerHTML = `<option value="">${veilig(T().alleGroepen)}</option>` +
             groepen.map((g) => `<option value="${veilig(g)}">${veilig(receptGroep(g))} (${tel(g)})</option>`).join("");
-        // Zodat er bij het openen meteen iets te kiezen valt
-        $("blChips").innerHTML = groepen.map((g) =>
-            `<button type="button" class="bl-chip" data-groep="${veilig(g)}">${veilig(receptGroep(g))} <small>${tel(g)}</small></button>`).join("");
-    }
-
-    function merkChip() {
-        const g = $("blGroep").value;
-        [...$("blChips").children].forEach((c) => c.classList.toggle("aan", c.dataset.groep === g));
     }
 
     function tekenResultaten() {
@@ -718,14 +710,17 @@
             </div>
 
             <section class="bl-kaart bl-niet-printen">
-                <div class="bl-let">
-                    <b>${t.uitlegKop}</b> ${t.uitleg}
-                    <ul>
-                        <li>${t.uitlegPorties}</li>
-                        <li>${t.uitlegBron}</li>
-                        ${t.bronTaal ? `<li>${t.bronTaal}</li>` : ""}
-                    </ul>
-                </div>
+                <details class="bl-let">
+                    <summary>${t.uitlegKop}</summary>
+                    <div class="bl-let-inhoud">
+                        ${t.uitleg}
+                        <ul>
+                            <li>${t.uitlegPorties}</li>
+                            <li>${t.uitlegBron}</li>
+                            ${t.bronTaal ? `<li>${t.bronTaal}</li>` : ""}
+                        </ul>
+                    </div>
+                </details>
 
                 <h2><span class="nr">1</span>${t.stap1}</h2>
                 <p class="bl-hint">${t.stap1Hint}</p>
@@ -733,7 +728,6 @@
                     <input id="blZoek" type="search" placeholder="${t.zoek}" autocomplete="off" aria-label="${t.zoekLabel}">
                     <select id="blGroep" aria-label="${t.hoofdgroep}"></select>
                 </div>
-                <div class="bl-chips" id="blChips"></div>
                 <ul id="blResultaten" aria-label="${t.resultaten}"></ul>
             </section>
 
@@ -797,14 +791,7 @@
 
     function koppelKnoppen() {
         $("blZoek").addEventListener("input", tekenResultaten);
-        $("blGroep").addEventListener("change", () => { merkChip(); tekenResultaten(); });
-        $("blChips").addEventListener("click", (e) => {
-            const c = e.target.closest("[data-groep]");
-            if (!c) return;
-            const g = $("blGroep");
-            g.value = g.value === c.dataset.groep ? "" : c.dataset.groep;   // nog eens tikken = weer uit
-            merkChip(); tekenResultaten();
-        });
+        $("blGroep").addEventListener("change", tekenResultaten);
         $("blResultaten").addEventListener("click", (e) => {
             const b = e.target.closest("[data-id]");
             if (b) voegToe(b.dataset.id);

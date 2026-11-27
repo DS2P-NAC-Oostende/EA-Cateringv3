@@ -146,7 +146,20 @@ function toonVideos() {
     }
 
     aantal.textContent = L().aantal(gevonden.length);
-    videoGrid.replaceChildren(...gevonden.map(maakKaart));
+    videoGrid.replaceChildren(...gevonden.map(kaartVoor));
+}
+
+// ---------- Kaarten hergebruiken ----------
+// Elke kaart wordt één keer gemaakt en daarna bewaard. Opnieuw tekenen
+// (zoeken, van categorie wisselen) verplaatst dan alleen bestaande kaarten
+// in plaats van er honderd nieuwe te bouwen. Zo blijft de app even snel
+// als de lijst groeit. Bij een taalwissel gooien we de kaarten weg, want
+// dan moeten de titels opnieuw.
+let kaartCache = new WeakMap();        // sleutel = het video-object zelf
+function kaartVoor(video) {
+    let k = kaartCache.get(video);
+    if (!k) { k = maakKaart(video); kaartCache.set(video, k); }
+    return k;
 }
 
 function maakKaart(video) {
@@ -165,6 +178,9 @@ function maakKaart(video) {
     afbeelding.src = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
     afbeelding.alt = "";
     afbeelding.loading = "lazy";
+    afbeelding.decoding = "async";
+    afbeelding.width = 320;            // vaste verhouding: de browser hoeft
+    afbeelding.height = 180;           // de opmaak niet opnieuw te berekenen
     afbeelding.onerror = function () {
         this.onerror = null;
         this.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
@@ -225,7 +241,13 @@ function sluitVideo() {
     if (laatsteFocus) laatsteFocus.focus();
 }
 
-zoekveld.addEventListener("input", toonVideos);
+// Even wachten tot het typen stilvalt; anders tekent de app bij elke
+// letter de hele lijst opnieuw.
+let tikTimer = null;
+zoekveld.addEventListener("input", () => {
+    clearTimeout(tikTimer);
+    tikTimer = setTimeout(toonVideos, 130);
+});
 sluitKnop.addEventListener("click", sluitVideo);
 videoModal.addEventListener("click", e => {
     if (e.target === videoModal) sluitVideo();
@@ -251,6 +273,7 @@ function zetTaal(nieuw) {
     document.querySelectorAll(".lang-btn").forEach(b =>
         b.classList.toggle("active", b.dataset.lang === taal));
     try { localStorage.setItem("nac-lang", taal); } catch (e) {}
+    kaartCache = new WeakMap();     // titels en categorieën moeten opnieuw
     bouwMenu();
     toonVideos();
 }

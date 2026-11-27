@@ -129,6 +129,13 @@ button, input { font: inherit; }
 .video-card:nth-child(n+2) { animation-delay: 30ms; }
 .video-card:nth-child(n+4) { animation-delay: 60ms; }
 .video-card:nth-child(n+7) { animation-delay: 90ms; }
+/* Alleen de eerste kaarten komen opvallen; de rest staat toch buiten beeld.
+   Honderd kaarten tegelijk laten bewegen kost de telefoon onnodig werk. */
+.video-card:nth-child(n+13) { animation: none; }
+/* De browser slaat kaarten buiten beeld helemaal over: geen opmaak, geen
+   tekenwerk. Hierdoor blijft het startscherm snel, ook bij 300 video's.
+   Browsers die dit niet kennen, negeren het gewoon. */
+.video-card { content-visibility: auto; contain-intrinsic-size: auto 320px; }
 @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .video-card:hover { transform: translateY(-4px); box-shadow: var(--schaduw-hover); border-color: rgba(197,160,89,.6); }
 .video-link { display: block; width: 100%; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit; }
