@@ -24,7 +24,7 @@
     //         Jij bereikt het dan met  ...?bestellijst=1  achter het adres.
     // true  = het tabblad staat gewoon in de kopbalk, voor iedereen.
     // Verander alleen dit ene woord als je hem vrijgeeft.
-    const VRIJGEGEVEN = false;
+    const VRIJGEGEVEN = true;
     // =========================================================
     window.BESTELLIJST_ZICHTBAAR = VRIJGEGEVEN ||
         new URLSearchParams(location.search).has("bestellijst") ||
