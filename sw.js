@@ -16,7 +16,7 @@
 // telefoon zichzelf. Dat is de garantie.
 // =============================================================
 
-const VERSIE = "2026-11-26-1400-cb44099";            // ROBOT-VERSIE (niet met de hand wijzigen)
+const VERSIE = "2026-11-27-1248-58e2bc8";            // ROBOT-VERSIE (niet met de hand wijzigen)
 const PREFIX = "eac-v3-";          // eigen opslag: alle apps op dit adres delen één opslag
 const CACHE = PREFIX + VERSIE;
 
